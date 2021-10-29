@@ -64,18 +64,18 @@ class User extends Authenticatable
     // Get list of who sent me a friend request
     public function myFriends()
     {
-        return $this->belongsToMany(self::class, 'friendships', 'user_id', 'user_id');
+        return $this->belongsToMany(self::class,'friends','user_id','friend_id')->withTimestamps();
     }
 
-    // Get the list of friends whom I invited
     public function friendsOf()
     {
-        return $this->belongsToMany(self::class, 'friendships', 'friend_id', 'user_id');
+        return $this->belongsToMany(self::class,'friends','friend_id','user_id')->withTimestamps();
     }
 
     // Merge
     public function getFriendsAttribute()
     {
-        return $this->myFriends->merge($this->friendOf);
+        return $this->myFriends->merge($this->friendsOf);
     }
+
 }

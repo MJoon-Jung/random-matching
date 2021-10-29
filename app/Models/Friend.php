@@ -4,13 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class Friendship extends Pivot
+class Friend extends Model
 {
     use HasFactory;
 
-    protected $table = 'friendships';
+    protected $table = 'friends';
 
     protected $fillable = [
         'user_id',
