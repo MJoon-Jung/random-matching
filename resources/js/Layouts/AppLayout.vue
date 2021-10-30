@@ -24,14 +24,17 @@
                                 </jet-nav-link>
                             </div>
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <jet-nav-link :href="route('request')" :active="route().current('request')">
-                                    requeste
+                                <jet-nav-link :href="route('friend.index')" :active="route().current('friend.index')">
+                                    friend list
                                 </jet-nav-link>
                             </div>
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ml-6">
                             <div class="ml-3 relative">
+<!--                                친구추가 모달-->
+                                <button @click="createSearchUserModal" class="text-sm">친구추가</button>
+                                <SearchUserModal :show="showSearchUserModal" :close="closeSearchUserModal" />
                                 <!-- Teams Dropdown -->
                                 <jet-dropdown align="right" width="60" v-if="$page.props.jetstream.hasTeamFeatures">
                                     <template #trigger>
@@ -237,7 +240,7 @@
 </template>
 
 <script>
-    import { defineComponent } from 'vue'
+    import {defineComponent, ref} from 'vue'
     import JetApplicationMark from '@/Jetstream/ApplicationMark.vue'
     import JetBanner from '@/Jetstream/Banner.vue'
     import JetDropdown from '@/Jetstream/Dropdown.vue'
@@ -245,12 +248,11 @@
     import JetNavLink from '@/Jetstream/NavLink.vue'
     import JetResponsiveNavLink from '@/Jetstream/ResponsiveNavLink.vue'
     import { Head, Link } from '@inertiajs/inertia-vue3';
+    import JetDialogModal from '@/Jetstream/DialogModal.vue';
+    import {Inertia} from "@inertiajs/inertia";
+    import SearchUserModal from "../Components/Friend/SearchUserModal";
 
     export default defineComponent({
-        props: {
-            title: String,
-        },
-
         components: {
             Head,
             JetApplicationMark,
@@ -260,26 +262,35 @@
             JetNavLink,
             JetResponsiveNavLink,
             Link,
+            SearchUserModal
         },
-
-        data() {
-            return {
-                showingNavigationDropdown: false,
-            }
+        props: {
+            title: String,
         },
+        setup(){
+            const showingNavigationDropdown = ref(false);
 
-        methods: {
-            switchToTeam(team) {
-                this.$inertia.put(route('current-team.update'), {
+            const showSearchUserModal = ref(false);
+            const createSearchUserModal = () => {
+                showSearchUserModal.value = true
+            };
+            const closeSearchUserModal = () => {
+                showSearchUserModal.value = false;
+            };
+
+
+            const switchToTeam = (team) => {
+                Inertia.put(route('current-team.update'), {
                     'team_id': team.id
                 }, {
                     preserveState: false
-                })
-            },
+                });
+            }
+            const logout = () => {
+                Inertia.post(route('logout'));
+            }
 
-            logout() {
-                this.$inertia.post(route('logout'));
-            },
-        }
+            return { showSearchUserModal, createSearchUserModal, closeSearchUserModal, showingNavigationDropdown, switchToTeam, logout };
+        },
     })
 </script>

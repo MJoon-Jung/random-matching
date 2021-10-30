@@ -2,8 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\Friend;
-use App\Models\User;
+use App\Domains\Friend\Models\Friend;
+use App\Domains\User\Models\User;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class FriendFactory extends Factory
@@ -16,13 +17,14 @@ class FriendFactory extends Factory
      */
     public function definition()
     {
-//        return [
-//            'user_id' => User::factory(),
-//            'friend_id' => 1,
-//        ];
+        $factory = new UserFactory();
+        return [
+            'user_id' => $factory,
+            'friend_id' => 1,
+        ];
 //        return [
 //            'user_id' => 1,
-//            'friend_id' => User::factory(),
+//            'friend_id' => $factory,
 //        ];
     }
 }

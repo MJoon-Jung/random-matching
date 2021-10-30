@@ -28,4 +28,7 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->name('dashboard');
 
-Route::get('request', [\App\Http\Controllers\UserController::class, 'requestFriend'])->name('request');
+Route::group(['prefix'=>'users', 'middleware'=>['auth:sanctum', 'verified']], function () {
+   Route::get('search', [\App\Domains\User\Controllers\UserController::class, 'searchUser'])->name('user.search');
+   Route::get('friends', [\App\Domains\Friend\Controllers\FriendController::class, 'index'])->name('friend.index');
+});

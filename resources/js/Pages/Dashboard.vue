@@ -22,6 +22,7 @@
     import Welcome from '@/Jetstream/Welcome.vue'
 
     export default defineComponent({
+        props: ['friends'],
         components: {
             AppLayout,
             Welcome,

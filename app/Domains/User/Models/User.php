@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Domains\User\Models;
 
+use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -76,6 +77,11 @@ class User extends Authenticatable
     public function getFriendsAttribute()
     {
         return $this->myFriends->merge($this->friendsOf);
+    }
+
+    protected static function newFactory()
+    {
+        return new UserFactory();
     }
 
 }

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Domains\Friend\Models;
 
+use Database\Factories\FriendFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,5 +16,10 @@ class Friend extends Model
         'user_id',
         'friend_id',
     ];
+
+    protected static function newFactory()
+    {
+        return new FriendFactory();
+    }
 
 }
