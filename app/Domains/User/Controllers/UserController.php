@@ -17,6 +17,10 @@ class UserController extends Controller
 
         $users = User::where('name', 'like', $name.'%')->get();
         return $users;
-//        $email = $request?->query('email');
+    }
+    public function getNotification()
+    {
+        $notifications = Auth::user()->notifications;
+        return response()->json($notifications, 200);
     }
 }

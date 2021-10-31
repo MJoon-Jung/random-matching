@@ -29,6 +29,13 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 })->name('dashboard');
 
 Route::group(['prefix'=>'users', 'middleware'=>['auth:sanctum', 'verified']], function () {
-   Route::get('search', [\App\Domains\User\Controllers\UserController::class, 'searchUser'])->name('user.search');
-   Route::get('friends', [\App\Domains\Friend\Controllers\FriendController::class, 'index'])->name('friend.index');
+   Route::get('/notification', [\App\Domains\User\Controllers\UserController::class, 'getNotification'])->name('user.notification');
+   Route::get('/search', [\App\Domains\User\Controllers\UserController::class, 'searchUser'])->name('user.search');
+   Route::get('/friends', [\App\Domains\Friend\Controllers\FriendController::class, 'index'])->name('friend.index');
+   Route::get('/friends/{user}/notifications', [\App\Domains\Friend\Controllers\FriendController::class, 'request'])->name('friend.request');
+   Route::patch('/notification', function () {
+       Auth::user()->unreadNotifications->markAsRead();
+       return response()->json(["message"=>"success"]);
+   })->name('user.read');
+   Route::patch('/friends/{user}', [\App\Domains\Friend\Controllers\FriendController::class, 'receive'])->name('friend.receive');
 });

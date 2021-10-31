@@ -73,15 +73,15 @@ class User extends Authenticatable
         return $this->belongsToMany(self::class,'friends','friend_id','user_id')->withTimestamps();
     }
 
+
     // Merge
     public function getFriendsAttribute()
     {
         return $this->myFriends->merge($this->friendsOf);
     }
 
-    protected static function newFactory()
+    public function receivesBroadcastNotificationsOn()
     {
-        return new UserFactory();
+        return 'users.'.$this->id;
     }
-
 }

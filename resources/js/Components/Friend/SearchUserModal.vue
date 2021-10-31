@@ -16,7 +16,7 @@
         <template #footer>
             <div class="flex-col">
                 <div v-for="user in userList">
-                    {{ user.name }}
+                    <user-list :user="user" />
                 </div>
             </div>
         </template>
@@ -26,9 +26,11 @@
 <script>
 import {defineComponent, ref} from "vue";
 import JetDialogModal from '../../Jetstream/DialogModal'
+import UserList from "./UserList";
 export default defineComponent({
     components: {
         JetDialogModal,
+        UserList,
     },
     props: ['show', 'close'],
     setup() {

@@ -16,10 +16,4 @@ class Friend extends Model
         'user_id',
         'friend_id',
     ];
-
-    protected static function newFactory()
-    {
-        return new FriendFactory();
-    }
-
 }

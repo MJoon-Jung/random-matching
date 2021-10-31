@@ -25,7 +25,7 @@
                             </div>
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <jet-nav-link :href="route('friend.index')" :active="route().current('friend.index')">
-                                    friend list
+                                    친구
                                 </jet-nav-link>
                             </div>
                         </div>
@@ -33,8 +33,10 @@
                         <div class="hidden sm:flex sm:items-center sm:ml-6">
                             <div class="ml-3 relative">
 <!--                                친구추가 모달-->
-                                <button @click="createSearchUserModal" class="text-sm">친구추가</button>
-                                <SearchUserModal :show="showSearchUserModal" :close="closeSearchUserModal" />
+                                <button @click="createNotifyModal" class="mr-2 text-sm">알림</button>
+                                <button @click="createSearchUserModal" class="mr-2 text-sm">친구추가</button>
+                                <NotifyModal v-if="showNotifyModal" :notifications="notifications" :show="showNotifyModal" :close="closeNotifyModal" />
+                                <SearchUserModal v-if="showSearchUserModal" :show="showSearchUserModal" :close="closeSearchUserModal" />
                                 <!-- Teams Dropdown -->
                                 <jet-dropdown align="right" width="60" v-if="$page.props.jetstream.hasTeamFeatures">
                                     <template #trigger>
@@ -251,6 +253,7 @@
     import JetDialogModal from '@/Jetstream/DialogModal.vue';
     import {Inertia} from "@inertiajs/inertia";
     import SearchUserModal from "../Components/Friend/SearchUserModal";
+    import NotifyModal from "../Components/Friend/NotifyModal";
 
     export default defineComponent({
         components: {
@@ -262,14 +265,33 @@
             JetNavLink,
             JetResponsiveNavLink,
             Link,
-            SearchUserModal
+            SearchUserModal,
+            NotifyModal,
         },
         props: {
             title: String,
         },
-        setup(){
+        setup(props){
+            const notifications = ref([]);
+
+            axios.get('/users/notification')
+                .then((res)=> {
+                    notifications.value = res.data;
+                })
+                .catch((err)=>console.error(err));
+
             const showingNavigationDropdown = ref(false);
 
+            //NotifyModal Variable
+            const showNotifyModal = ref(false);
+            const createNotifyModal = () => {
+                showNotifyModal.value = true
+            };
+            const closeNotifyModal = () => {
+                showNotifyModal.value = false;
+            };
+
+            //SearchUserModal Variable
             const showSearchUserModal = ref(false);
             const createSearchUserModal = () => {
                 showSearchUserModal.value = true
@@ -278,6 +300,10 @@
                 showSearchUserModal.value = false;
             };
 
+            // Echo.private('user.' + props.user.id)
+            //     .notification((notification) => {
+            //         console.log(notification.type);
+            //     });
 
             const switchToTeam = (team) => {
                 Inertia.put(route('current-team.update'), {
@@ -290,7 +316,8 @@
                 Inertia.post(route('logout'));
             }
 
-            return { showSearchUserModal, createSearchUserModal, closeSearchUserModal, showingNavigationDropdown, switchToTeam, logout };
+            return { showSearchUserModal, createSearchUserModal, closeSearchUserModal, showingNavigationDropdown,
+                switchToTeam, logout, showNotifyModal, createNotifyModal, closeNotifyModal, notifications };
         },
     })
 </script>

@@ -11,7 +11,6 @@ import {defineComponent} from "vue";
 export default defineComponent({
     props: ['friend'],
     setup(props) {
-        console.log(props.friends);
         return { };
     }
 })

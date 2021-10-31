@@ -64,6 +64,10 @@ return [
             'driver' => 'eloquent',
             'model' => \App\Domains\User\Models\User::class,
         ],
+        'friends' => [
+            'driver' => 'eloquent',
+            'model' => \App\Domains\Friend\Models\Friend::class,
+        ],
 
         // 'users' => [
         //     'driver' => 'database',
