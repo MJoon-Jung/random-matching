@@ -2,8 +2,9 @@
 
 namespace App\Domains\User\Models;
 
-use Database\Factories\UserFactory;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Domains\Channel\Models\Channel;
+use App\Domains\Channel\Models\Chat;
+use App\Domains\Channel\Models\Member;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -24,11 +25,8 @@ class User extends Authenticatable
      *
      * @var string[]
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+
+    protected $fillable = ['name', 'email', 'password', 'gender'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -39,7 +37,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
         'two_factor_recovery_codes',
-        'two_factor_secret',
+        'two_factor_secret'
     ];
 
     /**
@@ -48,9 +46,8 @@ class User extends Authenticatable
      * @var array
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        'email_verified_at' => 'datetime'
     ];
-
 
     /**
      * The accessors to append to the model's array form.
@@ -58,21 +55,42 @@ class User extends Authenticatable
      * @var array
      */
 
-    protected $appends = [
-        'profile_photo_url',
-    ];
+    protected $appends = ['profile_photo_url'];
+
+    public function channels()
+    {
+        return $this->belongsToMany(Channel::class, 'channel_member', 'member_id', 'channel_id');
+    }
+
+//    public function members()
+//    {
+//        return $this->hasMany(Member::class);
+//    }
+    public function chats()
+    {
+        return $this->hasMany(Chat::class);
+    }
 
     // Get list of who sent me a friend request
     public function myFriends()
     {
-        return $this->belongsToMany(self::class,'friends','user_id','friend_id')->withTimestamps();
+        return $this->belongsToMany(
+            self::class,
+            'friends',
+            'user_id',
+            'friend_id'
+        )->withTimestamps();
     }
 
     public function friendsOf()
     {
-        return $this->belongsToMany(self::class,'friends','friend_id','user_id')->withTimestamps();
+        return $this->belongsToMany(
+            self::class,
+            'friends',
+            'friend_id',
+            'user_id'
+        )->withTimestamps();
     }
-
 
     // Merge
     public function getFriendsAttribute()
@@ -82,6 +100,6 @@ class User extends Authenticatable
 
     public function receivesBroadcastNotificationsOn()
     {
-        return 'users.'.$this->id;
+        return 'users.' . $this->id;
     }
 }

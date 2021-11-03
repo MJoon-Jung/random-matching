@@ -2,6 +2,11 @@
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use App\Domains\Friend\Controllers\FriendController;
+use App\Domains\User\Controllers\UserController;
+use App\Domains\Channel\Controllers\ChannelController;
+use App\Domains\Channel\Controllers\ChatController;
 use Inertia\Inertia;
 
 /*
@@ -29,13 +34,19 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 })->name('dashboard');
 
 Route::group(['prefix'=>'users', 'middleware'=>['auth:sanctum', 'verified']], function () {
-   Route::get('/notification', [\App\Domains\User\Controllers\UserController::class, 'getNotification'])->name('user.notification');
-   Route::get('/search', [\App\Domains\User\Controllers\UserController::class, 'searchUser'])->name('user.search');
-   Route::get('/friends', [\App\Domains\Friend\Controllers\FriendController::class, 'index'])->name('friend.index');
-   Route::get('/friends/{user}/notifications', [\App\Domains\Friend\Controllers\FriendController::class, 'request'])->name('friend.request');
+   Route::get('/notification', [UserController::class, 'getNotification'])->name('user.notification');
+   Route::get('/search', [UserController::class, 'searchUser'])->name('user.search');
+   Route::get('/friends', [FriendController::class, 'index'])->name('friend.index');
+   Route::get('/friends/{user}/notifications', [FriendController::class, 'request'])->name('friend.request');
    Route::patch('/notification', function () {
        Auth::user()->unreadNotifications->markAsRead();
        return response()->json(["message"=>"success"]);
    })->name('user.read');
-   Route::patch('/friends/{user}', [\App\Domains\Friend\Controllers\FriendController::class, 'receive'])->name('friend.receive');
+   Route::patch('/friends/{user}', [FriendController::class, 'receive'])->name('friend.receive');
+});
+
+Route::group(['prefix'=>'channels', 'middleware'=>['auth:sanctum', 'verified']], function () {
+    Route::get('/', [ChannelController::class, 'index'])->name('channel.index');
+    Route::patch('/{channel}', [ChannelController::class, 'participate'])->name('channel.participate');
+    Route::post('/{channel}', [ChatController::class, 'store'])->name('chat.store');
 });

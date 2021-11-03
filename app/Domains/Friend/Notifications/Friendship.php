@@ -5,17 +5,14 @@ namespace App\Domains\Friend\Notifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Domains\User\Models\User;
-use Illuminate\Support\Facades\Auth;
 
-class Friendship extends Notification
+class Friendship extends Notification implements ShouldQueue
 {
     use Queueable;
 
     private User $requestUser;
-
 
     /**
      * Create a new notification instance.
@@ -35,7 +32,7 @@ class Friendship extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     /**
@@ -46,10 +43,10 @@ class Friendship extends Notification
      */
     public function toMail($notifiable)
     {
-//        return (new MailMessage)
-//                    ->line('The introduction to the notification.')
-//                    ->action('Notification Action', url('/'))
-//                    ->line('Thank you for using our application!');
+        //        return (new MailMessage)
+        //                    ->line('The introduction to the notification.')
+        //                    ->action('Notification Action', url('/'))
+        //                    ->line('Thank you for using our application!');
     }
 
     /**
@@ -61,17 +58,17 @@ class Friendship extends Notification
     public function toArray($notifiable)
     {
         return [
-            'id'=> $this->requestUser->id,
-            'name'=> $this->requestUser->name,
-            'email'=> $this->requestUser->email,
+            'id' => $this->requestUser->id,
+            'name' => $this->requestUser->name,
+            'email' => $this->requestUser->email
         ];
     }
     public function toBroadcast($notifiable)
     {
         return new BroadcastMessage([
-            'id'=> $this->requestUser->id,
-            'name'=> $this->requestUser->name,
-            'email'=> $this->requestUser->email,
+            'id' => $this->requestUser->id,
+            'name' => $this->requestUser->name,
+            'email' => $this->requestUser->email
         ]);
     }
 }

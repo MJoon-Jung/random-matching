@@ -8,18 +8,18 @@
                             <div class="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-teal-100">
                                 <div class="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-teal-100">
                                     <div class="w-full items-center flex justify-between">
-<!--                                        <img :src="notify.profile_photo_url" alt="profile" />-->
+<!--                                        <img :src="notification.profile_photo_url" alt="profile" />-->
                                         <div class="mx-2 -mt-1">
-                                            {{ notify.data.name }}님 에게 친구 요청이 도착했습니다.
+                                            {{ notification.data.name }}님 에게 친구 요청이 도착했습니다.
                                         </div>
-                                        <button @click.prevent="receiveFriend(notity.data.id)" class="text-indigo-500">
+                                        <button @click.prevent="receiveFriend(notification.data.id)" class="text-indigo-500">
                                             친구 수락
                                         </button>
                                         <div class="text-xs mx-2 -mt-1">
-                                            {{ relativeCreatedAt(notify.updated_at) }}
+                                            {{ relativeCreatedAt(notification.updated_at) }}
                                         </div>
                                         <div class="text-xs mx-2 -mt-1">
-                                            {{ notify.read_at ? '읽음' : '안읽음' }}
+                                            {{ notification.read_at ? '읽음' : '안읽음' }}
                                         </div>
                                     </div>
                                 </div>
@@ -45,9 +45,8 @@ export default defineComponent({
     components: {
         Link,
     },
-    props: ['notify'],
-    setup(props) {
-        console.log(props.notify)
+    props: ['notification'],
+    setup() {
         const relativeCreatedAt = (createdAt) => {
             return dayjs(createdAt).fromNow()
         }

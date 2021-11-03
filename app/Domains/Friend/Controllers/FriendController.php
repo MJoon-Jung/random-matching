@@ -16,26 +16,31 @@ class FriendController extends Controller
     public function index()
     {
         $friends = $this->getFriendList();
-        return Inertia::render('Friend/Friend', ["friends"=>$friends]);
+        return Inertia::render('Friend/Friend', ['friends' => $friends]);
     }
+
     public function store(int $id)
     {
     }
+
     public function getFriendList()
     {
         $user = Auth::user()->getFriendsAttribute();
         return $user;
     }
-    public function request(User $user) {
+
+    public function request(User $user)
+    {
         Notification::send($user, new Friendship(Auth::user()));
     }
+
     public function receive(User $user)
     {
         $friend = Friend::create([
-            'user_id'=>$user->id,
-            'friend_id'=>Auth::user()->id,
+            'user_id' => $user->id,
+            'friend_id' => Auth::user()->id
         ]);
 
-        return response()->json(["message"=>"success"]);
+        return response()->json(['message' => 'success']);
     }
 }

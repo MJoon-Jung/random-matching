@@ -8,9 +8,8 @@
 
         <template #content>
             <div v-if="notifications.length" class="flex-col">
-                ㅎㅇㅎㅇ
-                <div v-for="notification in notifications">
-                    <notify-list :notify="notification" />
+                <div v-for="notification in notifications" :key="notification.id">
+                    <notify-list :notification="notification"/>
                 </div>
             </div>
             <div v-else class="text-center">
@@ -19,17 +18,18 @@
         </template>
 
         <template #footer>
-            <button @click.prevent="readNotification">알림 다 읽기</button>
+            ㅎㅇ
         </template>
     </jet-dialog-modal>
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import {defineComponent} from "vue";
 import JetDialogModal from '../../Jetstream/DialogModal'
 import {Link} from "@inertiajs/inertia-vue3";
 import NotifyList from "./NotifyList";
 import {Inertia} from "@inertiajs/inertia";
+
 export default defineComponent({
     components: {
         JetDialogModal,
@@ -37,17 +37,14 @@ export default defineComponent({
         Link
     },
     props: ['show', 'close', 'notifications'],
-    setup(props) {
-        const readNotification = () => {
-            axios.patch('/users/notification')
-                .then((res) => {
-                    console.log(res.data);
-                    Inertia.reload();
-                })
-                .catch((err) => console.error(err));
-        }
+    setup() {
+        axios.patch('/users/notification')
+            .then((res) => {
+                console.log(res.data);
+            })
+            .catch((err) => console.error(err));
 
-        return { readNotification };
+        return { };
     },
 })
 </script>

@@ -68,6 +68,18 @@ return [
             'driver' => 'eloquent',
             'model' => \App\Domains\Friend\Models\Friend::class,
         ],
+        'Channel' => [
+            'driver' => 'eloquent',
+            'model' => \App\Domains\Channel\Models\Channel::class,
+        ],
+        'Chat' => [
+            'driver' => 'eloquent',
+            'model' => \App\Domains\Channel\Models\Chat::class,
+        ],
+        'Member' => [
+            'driver' => 'eloquent',
+            'model' => \App\Domains\Channel\Models\Member::class,
+        ],
 
         // 'users' => [
         //     'driver' => 'database',

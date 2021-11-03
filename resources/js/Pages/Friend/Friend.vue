@@ -1,5 +1,5 @@
 <template>
-    <app-layout title="Dashboard">
+    <app-layout title="Friend">
         <Link :href="route('user.notification')" method="get">
             알림
         </Link>

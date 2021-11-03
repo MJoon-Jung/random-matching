@@ -4,10 +4,8 @@ namespace App\Domains\User\Controllers;
 
 use App\Domains\User\Models\User;
 use App\Http\Controllers\Controller;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 
 class UserController extends Controller
 {
@@ -21,6 +19,7 @@ class UserController extends Controller
     public function getNotification()
     {
         $notifications = Auth::user()->notifications;
-        return response()->json($notifications, 200);
+        $unreadNotificationsCount = Auth::user()->unreadNotifications->count();
+        return response()->json(["notifications"=>$notifications, 'unreadNotificationsCount'=>$unreadNotificationsCount]);
     }
 }
