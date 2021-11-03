@@ -22,7 +22,7 @@ class FriendSeeder extends Seeder
     {
         $factory = new FriendFactory();
         $factory
-            ->count(1)
+            ->count(5)
             ->create();
     }
 }

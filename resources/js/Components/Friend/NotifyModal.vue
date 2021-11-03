@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import {defineComponent, ref} from "vue";
+import { defineComponent } from "vue";
 import JetDialogModal from '../../Jetstream/DialogModal'
 import {Link} from "@inertiajs/inertia-vue3";
 import NotifyList from "./NotifyList";
@@ -47,7 +47,7 @@ export default defineComponent({
                 .catch((err) => console.error(err));
         }
 
-        return { notifications, readNotification };
+        return { readNotification };
     },
 })
 </script>
