@@ -22,7 +22,7 @@ export default defineComponent({
     },
     props: ['friends'],
     setup(props) {
-        console.log(props.friends);
+        // console.log(props.friends);
         return { };
     }
 })

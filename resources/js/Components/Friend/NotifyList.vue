@@ -54,7 +54,7 @@ export default defineComponent({
         const receiveFriend = (userId) => {
             axios.patch(`/users/friends/${userId}`)
                 .then((res) => {
-                    console.log(res.data);
+                    //console.log(res.data);
                 })
                 .catch((err) => console.error(err));
         }

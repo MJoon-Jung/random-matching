@@ -323,7 +323,6 @@ export default defineComponent({
         title: String,
     },
     setup(props) {
-        const user = computed(() => usePage().props.value.user)
         const notifications = ref([]);
         const unreadNotificationsCount = ref(null);
         const getNotifications = () => {
@@ -373,7 +372,7 @@ export default defineComponent({
         }
         const logout = () => {
             Inertia.post(route('logout'));
-        }
+        };
 
         return {
             showSearchUserModal, createSearchUserModal, closeSearchUserModal, showingNavigationDropdown,

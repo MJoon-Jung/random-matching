@@ -47,6 +47,19 @@ Route::group(['prefix'=>'users', 'middleware'=>['auth:sanctum', 'verified']], fu
 
 Route::group(['prefix'=>'channels', 'middleware'=>['auth:sanctum', 'verified']], function () {
     Route::get('/', [ChannelController::class, 'index'])->name('channel.index');
+    Route::get('/{channel}/chats', [ChannelController::class, 'loadChat'])->name('channel.loadChat');
     Route::patch('/{channel}', [ChannelController::class, 'participate'])->name('channel.participate');
     Route::post('/{channel}', [ChatController::class, 'store'])->name('chat.store');
 });
+
+
+
+
+
+
+
+
+
+
+
+
