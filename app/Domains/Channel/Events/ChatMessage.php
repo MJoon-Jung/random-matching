@@ -12,18 +12,12 @@ class ChatMessage implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private int $channelId;
-    private string $content;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(int $channelId, string $content)
-    {
-        $this->channelId = $channelId;
-        $this->content = $content;
-    }
+    public function __construct(private int $channelId, private string $content){}
 
     /**
      * Get the channels the event should broadcast on.
