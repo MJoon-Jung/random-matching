@@ -10,7 +10,12 @@ class Channel extends Model
 {
     use HasFactory;
 
+    public $incrementing = false;
+
+    protected $keyType = 'string';
+
     protected $fillable = [
+        'id',
         'name',
     ];
 
@@ -18,10 +23,6 @@ class Channel extends Model
     {
         return $this->hasMany(Chat::class);
     }
-//    public function members()
-//    {
-//        return $this->hasMany(Member::class);
-//    }
 
     public function members()
     {

@@ -5,12 +5,14 @@ namespace App\Domains\User\Models;
 use App\Domains\Channel\Models\Channel;
 use App\Domains\Channel\Models\Chat;
 use App\Domains\Channel\Models\Member;
+use App\Domains\Matching\Models\Matching;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use phpDocumentor\Reflection\Types\Boolean;
 
 class User extends Authenticatable
 {
@@ -57,6 +59,11 @@ class User extends Authenticatable
 
     protected $appends = ['profile_photo_url'];
 
+    public function isMan(): Boolean
+    {
+        return $this?->gender === 0 ? true : false;
+    }
+
     public function channels()
     {
         return $this->belongsToMany(Channel::class, 'channel_member', 'member_id', 'channel_id');
@@ -69,6 +76,16 @@ class User extends Authenticatable
     public function chats()
     {
         return $this->hasMany(Chat::class);
+    }
+    //남자 검색
+    public function matchingMen()
+    {
+        return $this->hasMany(Matching::class, 'man_id', 'id');
+    }
+    //여자 검색
+    public function matchingWomen()
+    {
+        return $this->hasMany(Matching::class, 'woman_id', 'id');
     }
 
     // Get list of who sent me a friend request

@@ -7,6 +7,9 @@ use App\Domains\Friend\Controllers\FriendController;
 use App\Domains\User\Controllers\UserController;
 use App\Domains\Channel\Controllers\ChannelController;
 use App\Domains\Channel\Controllers\ChatController;
+use App\Domains\Matching\Controllers\MatchingController;
+use App\Domains\Matching\Controllers\VideoChatMatchingController;
+use App\Domains\Matching\Controllers\ChatMatchingController;
 use Inertia\Inertia;
 
 /*
@@ -18,8 +21,8 @@ use Inertia\Inertia;
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
 
+*/
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -29,9 +32,17 @@ Route::get('/', function () {
     ]);
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->name('dashboard');
+Route::middleware(['auth:sanctum', 'verified'])->get('/home', function () {
+    return Inertia::render('Home');
+})->name('home');
+
+Route::group(['prefix'=>'/matching/chat', 'middleware'=>['auth:sanctum', 'verified']], function () {
+    Route::get('/', [ChatMatchingController::class, 'index'])->name('chat-match.index');
+    Route::get('/connect', [ChatMatchingController::class, 'connect'])->name('chat-match.connect');
+});
+Route::group(['prefix'=>'/matching/videochat', 'middleware'=>['auth:sanctum', 'verified']], function () {
+    Route::get('/', [VideoChatMatchingController::class, 'index'])->name('video-match.index');
+});
 
 Route::group(['prefix'=>'users', 'middleware'=>['auth:sanctum', 'verified']], function () {
    Route::get('/notification', [UserController::class, 'getNotification'])->name('user.notification');

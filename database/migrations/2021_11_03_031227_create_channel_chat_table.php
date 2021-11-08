@@ -16,9 +16,11 @@ class CreateChannelChatTable extends Migration
         Schema::create('channel_chat', function (Blueprint $table) {
             $table->id();
             $table->string('content');
+            $table->uuid('channel_id')->nullable();
             $table
-                ->foreignId('channel_id')
-                ->nullable()
+                ->foreign('channel_id')
+                ->references('id')
+                ->on('channels')
                 ->constrained()
                 ->cascadeOnUpdate()
                 ->nullOnDelete();
@@ -29,7 +31,7 @@ class CreateChannelChatTable extends Migration
                 ->on('users')
                 ->constrained()
                 ->cascadeOnUpdate()
-                ->cascadeOnDelete();
+                ->nullOnDelete();
             $table->index('channel_id');
             $table->index('member_id');
             $table->timestamps();

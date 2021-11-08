@@ -16,7 +16,8 @@ class ChannelFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->name()
+            'id' => $this->faker->uuid(),
+            'name' => $this->faker->name(),
         ];
     }
 }

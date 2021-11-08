@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateChannelMemberTable extends Migration
+class CreateMatchingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,25 +13,29 @@ class CreateChannelMemberTable extends Migration
      */
     public function up()
     {
-        Schema::create('channel_member', function (Blueprint $table) {
+        Schema::create('matchings', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('member_id');
-            $table
-                ->foreign('member_id')
+            $table->unsignedBigInteger('category_id');
+            $table->foreign('category_id')
+                ->references('id')
+                ->on('matching_category')
+                ->constrained()
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+            $table->unsignedBigInteger('man_id');
+            $table->foreign('man_id')
                 ->references('id')
                 ->on('users')
                 ->constrained()
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
-            $table->uuid('channel_id');
-            $table
-                ->foreign('channel_id')
+            $table->unsignedBigInteger('woman_id');
+            $table->foreign('woman_id')
                 ->references('id')
-                ->on('channels')
+                ->on('users')
                 ->constrained()
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
-            $table->index('member_id');
             $table->timestamps();
         });
     }
@@ -43,6 +47,6 @@ class CreateChannelMemberTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('channelmembers');
+        Schema::dropIfExists('matchings');
     }
 }
