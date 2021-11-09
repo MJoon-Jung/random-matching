@@ -43,7 +43,6 @@ class VideoChatMatchingController extends Controller
 
     public function store()
     {
-
     }
 
     public function disconnect()

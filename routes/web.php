@@ -7,9 +7,9 @@ use App\Domains\Friend\Controllers\FriendController;
 use App\Domains\User\Controllers\UserController;
 use App\Domains\Channel\Controllers\ChannelController;
 use App\Domains\Channel\Controllers\ChatController;
-use App\Domains\Matching\Controllers\MatchingController;
 use App\Domains\Matching\Controllers\VideoChatMatchingController;
 use App\Domains\Matching\Controllers\ChatMatchingController;
+use App\Http\Controllers\VideoChatController;
 use Inertia\Inertia;
 
 /*
@@ -35,6 +35,11 @@ Route::get('/', function () {
 Route::middleware(['auth:sanctum', 'verified'])->get('/home', function () {
     return Inertia::render('Home');
 })->name('home');
+
+
+Route::group(['prefix'=> 'video' ,'middleware'=>['auth:sanctum', 'verified']], function () {
+    Route::get('/streaming', [VideoChatController::class, 'index'])->name('video.index');
+});
 
 Route::group(['prefix'=>'/matching/chat', 'middleware'=>['auth:sanctum', 'verified']], function () {
     Route::get('/', [ChatMatchingController::class, 'index'])->name('chat-match.index');

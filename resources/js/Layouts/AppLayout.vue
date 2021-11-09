@@ -33,6 +33,11 @@
                                 </jet-nav-link>
                             </div>
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                                <jet-nav-link :href="route('video.index')" :active="route().current('video.index')">
+                                    화상채팅방
+                                </jet-nav-link>
+                            </div>
+                            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <jet-nav-link :href="route('friend.index')" :active="route().current('friend.index')">
                                     친구
                                 </jet-nav-link>

@@ -40,7 +40,7 @@ class ChatMatchingController extends Controller
         $result = ['status' => 200];
         try {
 //            $result['data'] = $this->matchingService->connect();
-            $this->chatMatchingService->categorize($type);
+            $this->chatMatchingService->connect($type);
         } catch (\Exception $e) {
             $result = [
                 'status' => $e->getCode(),
