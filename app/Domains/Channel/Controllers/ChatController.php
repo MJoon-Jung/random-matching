@@ -14,7 +14,7 @@ class ChatController extends Controller
     public function store(Request $request, Channel $channel)
     {
         broadcast(new ChatMessage($channel->id, $request->message));
-        $chat = Chat::where('member_id', Auth::user()->id)
+        $chat = Chat::where('member_id', Auth::id())
             ->where('channel_id', $channel->id)
             ->with('member')->get();
 

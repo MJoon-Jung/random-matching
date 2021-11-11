@@ -31,7 +31,7 @@ class ChannelController extends Controller
     }
     public function participate(Channel $channel)
     {
-        $channel->members()->save(new Member(['member_id'=>Auth::user()->id, 'channel_id'=>$channel->id]));
+        $channel->members()->save(new Member(['member_id'=>Auth::id(), 'channel_id'=>$channel->id]));
 
         $channel->load('members');
 

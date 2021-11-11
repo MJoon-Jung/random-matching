@@ -17,7 +17,7 @@ class ChatMatchingService
             $woman = $this->matchingRepository->spop('women');
             //connect
         } else {
-            $this->matchingRepository->sadd('men', Auth::user()->id);
+            $this->matchingRepository->sadd('men', Auth::id());
         }
 
     }
@@ -28,7 +28,7 @@ class ChatMatchingService
             $man = $this->matchingRepository->spop('men');
             //connect
         } else {
-            $this->matchingRepository->sadd('women', Auth::user()->id);
+            $this->matchingRepository->sadd('women', Auth::id());
         }
     }
 

@@ -165,14 +165,9 @@ export default defineComponent({
                 console.log(chat);
                 chats.value[currentChannel.value].push(chat);
             });
-        });
-        onUnmounted(() => {
-            channels.value.map((channel) => {
-                //사용자가 채널을 종료할 때 트리거됨
-                channel.leaving((member) => {
-                    console.log(member.name);
-                    remove_member(member.id, member.info);
-                });
+            channel.leaving((member) => {
+                console.log(member.name);
+                // remove_member(member.id, member.info);
             });
         });
 

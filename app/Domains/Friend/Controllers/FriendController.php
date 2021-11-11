@@ -38,7 +38,7 @@ class FriendController extends Controller
     {
         $friend = Friend::create([
             'user_id' => $user->id,
-            'friend_id' => Auth::user()->id
+            'friend_id' => Auth::id(),
         ]);
 
         return response()->json(['message' => 'success']);

@@ -19,12 +19,22 @@ Broadcast::channel('users.{id}', function (User $user, int $id) {
     return $user->id === $id;
 });
 
-Broadcast::channel('channel.{channelId}', function (User $user, int $channelId) {
+Broadcast::channel('channel.{channelId}', function (User $user, string $channelId) {
     $isMember = Member::where('channel_id', $channelId)
         ->where('member_id', $user->id)
         ->exists();
     if(!$isMember) {
-        throw new HttpException('접근 권한이 없습니다.', 403);
+        throw new Exception('접근 권한이 없습니다.', 403);
+    }
+    return ['id' => $user->id, 'name' => $user->name];
+});
+
+Broadcast::channel('videoChat.{channelId}', function (User $user, string $channelId) {
+    $isMember = Member::where('channel_id', $channelId)
+        ->where('member_id', $user->id)
+        ->exists();
+    if(!$isMember) {
+        throw new Exception('접근 권한이 없습니다.', 403);
     }
     return ['id' => $user->id, 'name' => $user->name];
 });

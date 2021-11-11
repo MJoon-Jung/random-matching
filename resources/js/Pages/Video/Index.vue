@@ -1,41 +1,58 @@
 <template>
     <app-layout title="화상">
-        <div class="flex flex-wrap justify-center place-items-center h-screen">
-            <div class="text-center">
-                <video ref="myFace" autoplay playsinline width="400" height="400"/>
-                <button @click="handleMute"
-                        class="p-2 pl-5 pr-5 transition-colors duration-700 transform bg-indigo-500 hover:bg-blue-400 text-gray-100 text-lg rounded-lg focus:border-4 border-indigo-300">
-                    {{ muted ? '소리' : '음소거' }}
-                </button>
-                <button @click="handleCamera"
-                        class="p-2 pl-5 pr-5 transition-colors duration-700 transform bg-indigo-500 hover:bg-blue-400 text-gray-100 text-lg rounded-lg focus:border-4 border-indigo-300">
-                    {{ cameraOff ? '카메라 키기' : '카메라 끄기' }}
-                </button>
+        <div class="flex justify-between">
+            <div class="flex flex-wrap justify-center place-items-center h-screen">
+                <div class="text-center">
+                    <video ref="myFace" autoplay playsinline width="600" height="600"/>
+                    <button @click="handleMute"
+                            class="p-2 pl-5 pr-5 transition-colors duration-700 transform bg-indigo-500 hover:bg-blue-600 text-gray-100 text-lg rounded-lg focus:border-4 border-indigo-300">
+                        {{ deviceOff.muted ? '소리' : '음소거' }}
+                    </button>
+                    <button @click="handleCamera"
+                            class="p-2 pl-5 pr-5 transition-colors duration-700 transform bg-indigo-500 hover:bg-blue-600 text-gray-100 text-lg rounded-lg focus:border-4 border-indigo-300">
+                        {{ deviceOff.cameraOff ? '카메라 키기' : '카메라 끄기' }}
+                    </button>
+                    <select v-if="selectedCamera" v-model="selectedCamera.deviceId">
+                        <option v-for="camera in cameras" :key="camera.deviceId" :value="camera.deviceId">
+                            {{ camera.label }}
+                        </option>
+                    </select>
+                </div>
             </div>
-            <select v-if="selectedCamera" v-model="selectedCamera.deviceId">
-                <option v-for="camera in cameras" :key="camera.deviceId" :value="camera.deviceId">
-                    {{camera.label }}
-                </option>
-            </select>
+            <video ref="peerStream" autoplay playsinline width="600" height="600" :disabled="!peerConnected" />
         </div>
     </app-layout>
 </template>
 
 <script>
-import {defineComponent, ref, watch} from "vue";
+import {defineComponent, onUnmounted, ref, watch} from "vue";
 import AppLayout from "../../Layouts/AppLayout";
+import { handleMuteOnStream, handleCameraOnStream,getEcho} from "../../Socket/Video";
 
 export default defineComponent({
     components: {AppLayout},
-    setup() {
-        const cameraOff = ref(false);
-        const muted = ref(false);
+   setup() {
+
+
+        //webrtc
+        const deviceOff = ref({
+            cameraOff: false,
+            muted: false,
+        })
         //video 키는 코드
         const myFace = ref(null);
         const myStream = ref(null);
+        const myPeerConnection = ref(null);
 
         const cameras = ref(null);
         const selectedCamera = ref(null);
+
+        const peerStream = ref(null);
+        const peerConnected = ref(false);
+
+        const channelId = "5611ffff-3265-38b6-9f9e-66c54ed70b6e"
+        const Echo = getEcho();
+        const channel = Echo.join(`videoChat.${channelId}`);
 
 
         async function getCameras() {
@@ -55,12 +72,12 @@ export default defineComponent({
 
         async function getMedia(deviceId) {
             const initialConstraints = {
-                audio: true,
+                audio: false,
                 video: {facingMode: "user"}
             };
             const cameraConstraints = {
-                audio: true,
-                video: { deviceId: { exact: deviceId} },
+                audio: false,
+                video: {deviceId: {exact: deviceId}},
             };
             try {
                 myStream.value = await navigator.mediaDevices.getUserMedia(
@@ -73,30 +90,73 @@ export default defineComponent({
             }
         }
 
-        const handleCamera = () => {
-            myStream.value
-                .getVideoTracks()
-                .forEach((track) => track.enabled = !track.enabled);
-            cameraOff.value = !cameraOff.value;
-        };
-        const handleMute = () => {
-            myStream.value
-                .getAudioTracks()
-                .forEach((track) => track.enabled = !track.enabled);
-            muted.value = !muted.value;
-        };
+
 
         async function handleCameraChange() {
             await getMedia(selectedCamera.value.deviceId);
         }
 
-        getMedia();
+        const makeConnection = () => {
+            myPeerConnection.value = new RTCPeerConnection();
+            myPeerConnection.value.onicecandidate = handleIce;
+            myPeerConnection.value.ontrack = handleOnTrack;
+            myStream.value.getTracks().forEach((track) => myPeerConnection.value.addTrack(track, myStream.value));
+        }
+        function handleIce (data) {
+            channel.whisper('ice', data.candidate);
+        }
+        function handleOnTrack (data) {
+            peerStream.value.srcObject = data.streams[0];
+            peerConnected.value = true;
+        }
 
+        async function initCall() {
+            await getMedia();
+            makeConnection();
+        }
+
+        const handleCamera = () => handleCameraOnStream(myStream.value, deviceOff.value)
+        const handleMute = () => handleMuteOnStream(myStream.value, deviceOff.value)
+
+        initCall()
+
+        //socket pusher
+        //사용자가 채널에 가입할 때 이벤트가 트리거됨
+        channel
+            .joining(async (member) => {
+                console.log(`${member.name} 님이 참가했습니다.`);
+                const offer = await myPeerConnection.value.createOffer();
+                myPeerConnection.value.setLocalDescription(offer);
+                channel.whisper('offer', offer);
+            })
+            .listenForWhisper('offer', async (offer) => {
+                myPeerConnection.value.setRemoteDescription(offer);
+                const answer = await myPeerConnection.value.createAnswer();
+                myPeerConnection.value.setLocalDescription(answer);
+                channel.whisper('answer', answer);
+            })
+            .listenForWhisper('answer', (answer) => {
+                myPeerConnection.value.setRemoteDescription(answer);
+            })
+            .listenForWhisper('ice', (ice) => {
+                myPeerConnection.value.addIceCandidate(ice);
+            })
+            .leaving((member) => {
+                console.log(`${member.name} 님이 나가셨습니다.`);
+                window.location.reload();
+            });
+
+
+        //카메라 변경
         watch(selectedCamera.value, async (val, oldVal) => {
             await handleCameraChange(val);
         });
 
-        return {myFace, handleCamera, cameraOff, handleMute, muted, cameras, selectedCamera};
+        onUnmounted(() => {
+            Echo.leave(`videoChat.${channelId}`);
+        })
+
+        return {myFace, handleCamera, deviceOff, handleMute, cameras, selectedCamera, peerStream,peerConnected};
     },
 })
 </script>

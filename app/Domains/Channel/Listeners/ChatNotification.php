@@ -29,7 +29,7 @@ class ChatNotification
     {
         Chat::create([
             'content' => $event->getContent(),
-            'member_id' => Auth::user()->id,
+            'member_id' => Auth::id(),
             'channel_id' => $event->getChannelId()
         ]);
 
