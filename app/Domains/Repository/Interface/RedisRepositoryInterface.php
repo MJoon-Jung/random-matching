@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Domains\Matching\Repository\Interface;
+namespace App\Domains\Repository\Interface;
 
-interface MatchingRepositoryInterface
+interface RedisRepositoryInterface
 {
     public function sadd(string $set, int $userId);
 

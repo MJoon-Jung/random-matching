@@ -19,7 +19,7 @@
                     </select>
                 </div>
             </div>
-            <video ref="peerStream" autoplay playsinline width="600" height="600" :disabled="!peerConnected" />
+            <video ref="peerStream" autoplay playsinline width="600" height="600" :disabled="!peerStream?.srcObject" />
         </div>
     </app-layout>
 </template>
@@ -48,7 +48,6 @@ export default defineComponent({
         const selectedCamera = ref(null);
 
         const peerStream = ref(null);
-        const peerConnected = ref(false);
 
         const channelId = "5611ffff-3265-38b6-9f9e-66c54ed70b6e"
         const Echo = getEcho();
@@ -107,7 +106,6 @@ export default defineComponent({
         }
         function handleOnTrack (data) {
             peerStream.value.srcObject = data.streams[0];
-            peerConnected.value = true;
         }
 
         async function initCall() {
@@ -124,6 +122,7 @@ export default defineComponent({
         //사용자가 채널에 가입할 때 이벤트가 트리거됨
         channel
             .joining(async (member) => {
+                myPeerConnection.value.onicecandidate || makeConnection()
                 console.log(`${member.name} 님이 참가했습니다.`);
                 const offer = await myPeerConnection.value.createOffer();
                 myPeerConnection.value.setLocalDescription(offer);
@@ -143,7 +142,9 @@ export default defineComponent({
             })
             .leaving((member) => {
                 console.log(`${member.name} 님이 나가셨습니다.`);
-                window.location.reload();
+                peerStream.value.srcObject = null;
+                //다시 초기셋팅
+                makeConnection();
             });
 
 
@@ -154,9 +155,10 @@ export default defineComponent({
 
         onUnmounted(() => {
             Echo.leave(`videoChat.${channelId}`);
+            makeConnection();
         })
 
-        return {myFace, handleCamera, deviceOff, handleMute, cameras, selectedCamera, peerStream,peerConnected};
+        return {myFace, handleCamera, deviceOff, handleMute, cameras, selectedCamera, peerStream };
     },
 })
 </script>

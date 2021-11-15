@@ -43,10 +43,11 @@ Route::group(['prefix'=> 'video' ,'middleware'=>['auth:sanctum', 'verified']], f
 
 Route::group(['prefix'=>'/matching/chat', 'middleware'=>['auth:sanctum', 'verified']], function () {
     Route::get('/', [ChatMatchingController::class, 'index'])->name('chat-match.index');
-    Route::get('/connect', [ChatMatchingController::class, 'connect'])->name('chat-match.connect');
+    Route::get('/connect/{genderType}', [ChatMatchingController::class, 'connect'])->name('chat-match.connect');
 });
 Route::group(['prefix'=>'/matching/videochat', 'middleware'=>['auth:sanctum', 'verified']], function () {
     Route::get('/', [VideoChatMatchingController::class, 'index'])->name('video-match.index');
+    Route::get('/connect/{genderType}', [VideoChatMatchingController::class, 'connect'])->name('video-match.connect');
 });
 
 Route::group(['prefix'=>'users', 'middleware'=>['auth:sanctum', 'verified']], function () {

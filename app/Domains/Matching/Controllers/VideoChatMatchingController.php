@@ -2,14 +2,15 @@
 
 namespace App\Domains\Matching\Controllers;
 
-use App\Domains\Matching\Services\ChatMatchingService;
+use App\Domains\Matching\Services\MatchingService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class VideoChatMatchingController extends Controller
 {
-    public function __construct(private ChatMatchingService $matchingService)
+    private string $matchingType = 'video';
+    public function __construct(private MatchingService $videoMatchingService)
     {
     }
 
@@ -26,12 +27,12 @@ class VideoChatMatchingController extends Controller
 
     }
 
-    public function connect()
+    public function connect(int $genderType)
     {
         $result = ['status' => 200];
         try {
-//            $result['data'] = $this->matchingService->connect();
-            $this->matchingService->connect();
+//            $result['data'] = $this->videoMatchingService->connect();
+            $this->videoMatchingService->connect($genderType, $this->matchingType);
         } catch (\Exception $e) {
             $result = [
                 'status' => $e->getCode(),

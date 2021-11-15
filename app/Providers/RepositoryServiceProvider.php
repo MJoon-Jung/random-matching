@@ -2,8 +2,9 @@
 
 namespace App\Providers;
 
-use App\Domains\Matching\Repository\Interface\MatchingRepositoryInterface;
-use App\Domains\Matching\Repository\MatchingRepository;
+
+use App\Domains\Repository\Interface\RedisRepositoryInterface;
+use App\Domains\Repository\RedisRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -15,7 +16,7 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(MatchingRepositoryInterface::class, MatchingRepository::class);
+        $this->app->bind(RedisRepositoryInterface::class, RedisRepository::class);
     }
 
     /**
