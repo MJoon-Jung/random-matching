@@ -12,9 +12,7 @@ use Laravel\Jetstream\Features;
 class UserFactory extends Factory
 {
     /**
-     * The name of the factory's corresponding model.
-     *
-     * @var string
+     * @var \App\Domains\User\Models\User  $model
      */
     protected $model = User::class;
 

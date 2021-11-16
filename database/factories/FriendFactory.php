@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class FriendFactory extends Factory
 {
+    /**
+     * @var \App\Domains\Friend\Models\Friend  $model
+     * @var \Database\Factories\ChannelFactory $factory
+     */
     protected $model = Friend::class;
     /**
      * Define the model's default state.

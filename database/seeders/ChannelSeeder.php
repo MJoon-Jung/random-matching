@@ -8,6 +8,10 @@ use Illuminate\Database\Seeder;
 
 class ChannelSeeder extends Seeder
 {
+    /**
+     * @var \App\Domains\Channel\Models\Channel  $model
+     * @var \Database\Factories\ChannelFactory $factory
+     */
     protected $model = Channel::class;
     protected $factory = ChannelFactory::class;
     /**
