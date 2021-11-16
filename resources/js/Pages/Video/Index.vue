@@ -49,7 +49,7 @@ export default defineComponent({
 
         const peerStream = ref(null);
 
-        const channelId = "5611ffff-3265-38b6-9f9e-66c54ed70b6e"
+        const channelId = "0499f659-5df9-3996-ab3a-47eae7c3e832"
         const Echo = getEcho();
         const channel = Echo.join(`videoChat.${channelId}`);
 

@@ -11,17 +11,13 @@ class Matching extends Model
     use HasFactory;
 
     protected $fillable = [
-        'category_id',
+        'type',
         'man_id',
         'woman_id'
     ];
 
     protected $table = 'matchings';
 
-    public function categories()
-    {
-        return $this->belongsTo(MatchingCategory::class, 'category_id');
-    }
     public function man()
     {
         return $this->belongsTo(User::class, 'man_id');

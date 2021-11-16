@@ -10,7 +10,7 @@ use Inertia\Inertia;
 class VideoChatMatchingController extends Controller
 {
     private string $matchingType = 'video';
-    public function __construct(private MatchingService $videoMatchingService)
+    public function __construct(private MatchingService $matchingService)
     {
     }
 
@@ -27,12 +27,12 @@ class VideoChatMatchingController extends Controller
 
     }
 
-    public function connect(int $genderType)
+    public function connect()
     {
         $result = ['status' => 200];
         try {
 //            $result['data'] = $this->videoMatchingService->connect();
-            $this->videoMatchingService->connect($genderType, $this->matchingType);
+            $this->matchingService->classifyByGender($this->matchingType);
         } catch (\Exception $e) {
             $result = [
                 'status' => $e->getCode(),

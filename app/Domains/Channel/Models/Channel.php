@@ -5,10 +5,12 @@ namespace App\Domains\Channel\Models;
 use App\Domains\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class Channel extends Model
 {
     use HasFactory;
+    use Notifiable;
 
     public $incrementing = false;
 
@@ -16,7 +18,7 @@ class Channel extends Model
 
     protected $fillable = [
         'id',
-        'name',
+        'type',
     ];
 
     public function chats()
@@ -27,5 +29,9 @@ class Channel extends Model
     public function members()
     {
         return $this->belongsToMany(User::class, 'channel_member', 'channel_id', 'member_id');
+    }
+    public function member()
+    {
+        return $this->hasMany(User::class, 'channel_id', 'id');
     }
 }
