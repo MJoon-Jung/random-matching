@@ -27,12 +27,12 @@ class VideoChatMatchingController extends Controller
 
     }
 
-    public function connect()
+    public function connect(Request $request)
     {
         $result = ['status' => 200];
         try {
 //            $result['data'] = $this->videoMatchingService->connect();
-            $this->matchingService->classifyByGender($this->matchingType);
+            $this->matchingService->classifyByGender($this->matchingType, $request->type);
         } catch (\Exception $e) {
             $result = [
                 'status' => $e->getCode(),

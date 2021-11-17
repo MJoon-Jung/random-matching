@@ -54,6 +54,15 @@
                 <jet-input id="email" type="email" class="mt-1 block w-full" v-model="form.email" />
                 <jet-input-error :message="form.errors.email" class="mt-2" />
             </div>
+            <!-- Gender -->
+            <div class="col-span-6 sm:col-span-4">
+                <jet-label for="email" value="Gender" />
+                <select v-model="form.gender" :value="form.gender">
+                    <option :value="1">남</option>
+                    <option :value="0">여</option>
+                </select>
+                <jet-input-error :message="form.errors.gender" class="mt-2" />
+            </div>
         </template>
 
         <template #actions>
@@ -90,7 +99,6 @@
         },
 
         props: ['user'],
-
         data() {
             return {
                 form: this.$inertia.form({
@@ -98,12 +106,12 @@
                     name: this.user.name,
                     email: this.user.email,
                     photo: null,
+                    gender: this.user.gender,
                 }),
 
                 photoPreview: null,
             }
         },
-
         methods: {
             updateProfileInformation() {
                 if (this.$refs.photo) {
