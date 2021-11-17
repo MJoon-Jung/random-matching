@@ -7,16 +7,15 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class VideoChatMatchingController extends Controller
+class VideoMatchingController extends Controller
 {
-    private string $matchingType = 'video';
     public function __construct(private MatchingService $matchingService)
     {
     }
 
     public function index()
     {
-        return Inertia::render('Matching/VideoChat/Index');
+        return Inertia::render('Matching/Video/Index');
     }
     public function wait()
     {
@@ -32,7 +31,7 @@ class VideoChatMatchingController extends Controller
         $result = ['status' => 200];
         try {
 //            $result['data'] = $this->videoMatchingService->connect();
-            $this->matchingService->classifyByGender($this->matchingType, $request->type);
+            $this->matchingService->classifyByGender($request->type);
         } catch (\Exception $e) {
             $result = [
                 'status' => $e->getCode(),

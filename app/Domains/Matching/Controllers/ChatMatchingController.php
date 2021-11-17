@@ -9,7 +9,6 @@ use Inertia\Inertia;
 
 class ChatMatchingController extends Controller
 {
-    private string $matchingType = 'chat';
     public function __construct(private MatchingService $matchingService)
     {
     }
@@ -27,13 +26,13 @@ class ChatMatchingController extends Controller
 
     }
 
-    public function connect()
+    public function connect(Request $request)
     {
 //        type 1 'date-chat', 2 'chat' , 3 'date-video', 4 'video'
         $result = ['status' => 200];
         try {
 //            $result['data'] = $this->matchingService->connect();
-            $this->matchingService->classifyByGender($this->matchingType);
+            $this->matchingService->classifyByGender($request->type);
         } catch (\Exception $e) {
             $result = [
                 'status' => $e->getCode(),

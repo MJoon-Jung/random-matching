@@ -14,43 +14,43 @@ class MatchingService
     {
     }
 
-    public function maleSideConnection(string $matchingType)
+    public function maleSideConnection(string $type)
     {
-        if ($this->redisRepository->smembers($matchingType.'women')) {
-            $woman = $this->redisRepository->spop($matchingType.'women');
-            $this->createMatching(Auth::id(), $woman);
+        if ($this->redisRepository->smembers($type.'women')) {
+            $womanId = $this->redisRepository->spop($type.'women');
+            $this->joinChannel(Auth::id(), $womanId, $type);
+            return "matching success";
         } else {
-            $this->redisRepository->sadd($matchingType.'men', Auth::id());
+            $this->redisRepository->sadd($type.'men', Auth::id());
+            return "wait a minute";
         }
 
     }
 
-    public function femaleSideConnection(string $matchingType)
+    public function femaleSideConnection(string $type)
     {
-        if ($this->redisRepository->smembers($matchingType.'men')) {
+        if ($this->redisRepository->smembers($type.'men')) {
             /* set 에서 유저 한명 꺼내서 매칭 시킴
             */
-            $man = $this->redisRepository->spop($matchingType.'men');
-            $this->createChannel();
+            $manId = $this->redisRepository->spop($type.'men');
+            $this->joinChannel($manId, Auth::id(), $type);
             return "matching success";
         } else {
-            $this->redisRepository->sadd($matchingType.'women', Auth::id());
+            $this->redisRepository->sadd($type.'women', Auth::id());
             return "wait a minute";
         }
     }
-    public function classifyByGender(string $matchingType)
+    public function classifyByGender(string $type)
     {
-        Auth::user()->isMan() ? $this->maleSideConnection($matchingType) : $this->femaleSideConnection($matchingType);
+        return Auth::user()->isMan() ? $this->maleSideConnection( $type) : $this->femaleSideConnection( $type);
     }
-    public function createChannel()
+    public function joinChannel(int $manId, int $womanId, string $type)
     {
-        // 채널을 여기서 생성하는 게 맞는건지 다시 생각
-        // 채널 레포지토리라든지 다른 데에 의존하는 게 맞는 것 같기도
-        return Channel::create([
+        $channel = Channel::create([
             'id' => (string) Str::uuid(),
-            'type' => 'blind_data_video_chat',
-//            ['blind_date_chat', 'blind_date_video_chat', 'chat', 'video_chat']);
+            'type' => $type,
         ]);
+        $channel->members()->save(['man_id' => $manId, 'woman_id' => $womanId]);
     }
 }
 

@@ -15,7 +15,7 @@ class CreateChannelsTable extends Migration
     {
         Schema::create('channels', function (Blueprint $table) {
             $table->uuid('id');
-            $table->enum('type', ['blind_date_chat', 'blind_date_video_chat', 'chat', 'video_chat']);
+            $table->enum('type', ['video', 'chat', 'blind_video', 'blind_chat']);
             $table->primary('id');
             $table->timestamps();
         });

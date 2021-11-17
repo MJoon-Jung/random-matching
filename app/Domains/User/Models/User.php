@@ -59,9 +59,10 @@ class User extends Authenticatable
 
     protected $appends = ['profile_photo_url'];
 
-    public function isMan(): Boolean
+    public function isMan()
     {
-        return $this?->gender === 0 ? true : false;
+//       man = true , woman = false
+        return $this?->gender;
     }
 
     public function channels()

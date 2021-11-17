@@ -13,12 +13,12 @@ class RedisRepository implements RedisRepositoryInterface
         Redis::command('sadd', [$set, $userId]);
     }
 
-    public function spop(string $set): ?int
+    public function spop(string $set)
     {
         return Redis::command('spop', [$set]);
     }
 
-    public function smembers(string $set): ?int
+    public function smembers(string $set)
     {
         return Redis::command('smembers', [$set]);
     }
