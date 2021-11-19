@@ -17,6 +17,10 @@ class IsSetProfile
      */
     public function handle(Request $request, Closure $next)
     {
-        return $request->user()?->gender ? $next($request) : redirect()->route('profile.show');
+
+        if(isset($request->user()->gender)){
+            return $next($request);
+        }
+        return redirect()->route('profile.show');
     }
 }

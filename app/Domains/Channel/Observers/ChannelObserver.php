@@ -16,7 +16,7 @@ class ChannelObserver
      */
     public function created(Channel $channel)
     {
-        $member = Member::where('channel_id', $channel->id)->firsrt();
+        $member = Member::where('channel_id', $channel->id)->first();
         broadcast(new NewChannelEvent($channel, $member->man_id, $member->woman_id));
     }
     /**

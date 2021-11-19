@@ -15,11 +15,15 @@ class RedisRepository implements RedisRepositoryInterface
 
     public function spop(string $set)
     {
-        return Redis::command('spop', [$set]);
+        return (int) Redis::command('spop', [$set]);
     }
 
     public function smembers(string $set)
     {
-        return Redis::command('smembers', [$set]);
+        $members = Redis::command('smembers', [$set]);
+        if ($members) {
+            return (int) $members[0];
+        }
+        return 0;
     }
 }

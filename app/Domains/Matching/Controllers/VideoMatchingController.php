@@ -5,6 +5,7 @@ namespace App\Domains\Matching\Controllers;
 use App\Domains\Matching\Services\MatchingService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class VideoMatchingController extends Controller
@@ -30,8 +31,7 @@ class VideoMatchingController extends Controller
     {
         $result = ['status' => 200];
         try {
-//            $result['data'] = $this->videoMatchingService->connect();
-            $this->matchingService->classifyByGender($request->type);
+            $result['message'] = $this->matchingService->classifyByGender($request->type);
         } catch (\Exception $e) {
             $result = [
                 'status' => $e->getCode(),
