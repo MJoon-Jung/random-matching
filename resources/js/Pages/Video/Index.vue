@@ -30,8 +30,9 @@ import AppLayout from "../../Layouts/AppLayout";
 import { handleMuteOnStream, handleCameraOnStream,getEcho} from "../../Socket/Video";
 
 export default defineComponent({
+    props: ['channelId'],
     components: {AppLayout},
-   setup() {
+   setup(props) {
 
 
         //webrtc
@@ -49,9 +50,8 @@ export default defineComponent({
 
         const peerStream = ref(null);
 
-        const channelId = "0499f659-5df9-3996-ab3a-47eae7c3e832"
         const Echo = getEcho();
-        const channel = Echo.join(`videoChat.${channelId}`);
+        const channel = Echo.join(`videoChat.${props.channelId}`);
 
 
         async function getCameras() {

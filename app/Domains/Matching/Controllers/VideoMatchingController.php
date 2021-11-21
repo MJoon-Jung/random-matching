@@ -34,8 +34,8 @@ class VideoMatchingController extends Controller
             $result['message'] = $this->matchingService->classifyByGender($request->type);
         } catch (\Exception $e) {
             $result = [
-                'status' => $e->getCode(),
-                'error' => $e->getMessage(),
+                'error' =>  $e->getMessage(),
+                'status' => 500,
             ];
         }
         return response()->json($result, $result['status']);

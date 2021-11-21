@@ -38,7 +38,7 @@ Route::middleware(['auth:sanctum', 'verified', 'profile'])->get('/home', functio
 
 
 Route::group(['prefix'=> 'video' ,'middleware'=>['auth:sanctum', 'verified', 'profile']], function () {
-    Route::get('/streaming', [VideoChatController::class, 'index'])->name('video.index');
+    Route::get('/streaming/{channel}', [VideoChatController::class, 'index'])->name('video.index');
 });
 
 Route::group(['prefix'=>'/matching/chat', 'middleware'=>['auth:sanctum', 'verified', 'profile']], function () {

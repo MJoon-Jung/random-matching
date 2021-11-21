@@ -15,7 +15,7 @@ class CreateMatchingsTable extends Migration
     {
         Schema::create('matchings', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['blind_date_chat', 'blind_date_video_chat', 'chat', 'video_chat']);
+            $table->enum('type', ['video', 'chat', 'blind_video', 'blind_chat']);
             $table->unsignedBigInteger('man_id');
             $table->foreign('man_id')
                 ->references('id')

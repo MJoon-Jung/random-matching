@@ -18,6 +18,7 @@
 import {computed, defineComponent, ref} from "vue";
 import AppLayout from "../../../Layouts/AppLayout";
 import {usePage} from "@inertiajs/inertia-vue3";
+import {Inertia} from "@inertiajs/inertia";
 export default defineComponent({
     components: {AppLayout},
     setup() {
@@ -36,7 +37,9 @@ export default defineComponent({
 
         window.Echo.private(`users.${user.value.id}`)
             .listen('.new.channel', (event) => {
-                console.log(event);
+                console.log(event)
+                Inertia.visit(`/video/streaming/${event.channelId}`)
+                // window.location.href = `/video/streaming/${event.channelId}`
             })
 
         return { blindMatching, loading };

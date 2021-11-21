@@ -2,6 +2,7 @@
 
 namespace App\Domains\Matching\Services;
 
+use App\Domains\Channel\Events\NewChannelEvent;
 use App\Domains\Channel\Models\Channel;
 use App\Domains\Channel\Models\Member;
 use App\Domains\Matching\Models\Matching;
@@ -77,8 +78,15 @@ class MatchingService
             ]);
             Log::info($channel);
 
-            $channel->members()->save(['channel_id' => $channel->id, 'member_id' => $manId]);
-            $channel->members()->save(['channel_id' => $channel->id, 'member_id' => $womanId]);
+            Member::create([
+                'channel_id' => $channel->id,
+                'member_id' => $manId,
+            ]);
+            Member::create([
+                'channel_id' => $channel->id,
+                'member_id' => $womanId,
+            ]);
+            broadcast(new NewChannelEvent($channel, $manId, $womanId));
 
             DB::commit();
         }catch (\Throwable $e) {

@@ -2,7 +2,8 @@
 
 namespace App\Domains\Channel\Events;
 
-use Illuminate\Broadcasting\Channel;
+
+use App\Domains\Channel\Models\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
