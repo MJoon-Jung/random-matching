@@ -5,13 +5,10 @@ namespace App\Domains\Matching\Services;
 use App\Domains\Channel\Events\NewChannelEvent;
 use App\Domains\Channel\Models\Channel;
 use App\Domains\Channel\Models\Member;
-use App\Domains\Matching\Models\Matching;
-use App\Domains\Repository\Interface\RedisRepositoryInterface;
 use App\Domains\Repository\RedisRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
 class MatchingService
