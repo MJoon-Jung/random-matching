@@ -14,6 +14,8 @@ class Channel extends Model
 
     public $incrementing = false;
 
+    protected $with = ['members'];
+
     protected $keyType = 'string';
 
     protected $fillable = [

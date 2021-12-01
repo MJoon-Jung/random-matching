@@ -22,32 +22,19 @@
                                 ></path>
                             </svg>
                         </div>
-                        <div class="ml-2 font-bold text-2xl">채팅방</div>
+                        <div class="ml-2 font-bold text-2xl">랜덤 채팅방</div>
                     </div>
-                    <Profile/>
-                    <div class="flex flex-col mt-8">
-                        <div class="flex flex-row items-center justify-between text-xs">
-                            <span class="font-bold">Active Conversations</span>
-                            <span
-                                class="flex items-center justify-center bg-gray-300 h-4 w-4 rounded-full"
-                            >{{ $page.props.user.channels.length }}</span
-                            >
-                        </div>
-                        <div class="flex flex-col space-y-1 mt-4 -mx-2 h-48 overflow-y-auto">
-                            <ChannelList v-on:changeCurrentChannel="changeCurrentChannel" :channels="info.channels"/>
-                        </div>
-                    </div>
+                    <RandomChatProfile v-for="member in channel.members" :key="member.id" :member="member"/>
+                    <Link :href="route('match.index')">연결 끊기</Link>
                 </div>
-                <div class="flex flex-col flex-auto h-full p-6">
+                <div class="flex flex-col flex-auto h-[calc(100vh-72px)] p-6">
                     <div
                         class="flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-gray-100 h-full p-4"
                     >
-                        <div class="flex flex-col h-full overflow-x-auto mb-4">
+                        <div ref="chattingListScroll" class="flex flex-col h-full overflow-x-auto overflow-scroll">
                             <div class="flex flex-col h-full">
                                 <div class="grid grid-cols-12 gap-y-2">
-                                    <Chat v-if="currentChannel"
-                                          v-for="chat in chats[currentChannel]"
-                                          :chat="chat"/>
+                                    <Chat v-for="chatMessage in chatMessages" :chat="chatMessage"/>
                                 </div>
                             </div>
                         </div>
@@ -78,6 +65,7 @@
                                 <div class="relative w-full">
                                     <input
                                         type="text"
+                                        v-model="chatMessage"
                                         class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"
                                     />
                                     <button
@@ -102,25 +90,26 @@
                             </div>
                             <div class="ml-4">
                                 <button
+                                    @click="handleSendChatMessage"
                                     class="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0"
                                 >
                                     <span>Send</span>
                                     <span class="ml-2">
-                  <svg
-                      class="w-4 h-4 transform rotate-45 -mt-px"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                    ></path>
-                  </svg>
-                </span>
+                                      <svg
+                                          class="w-4 h-4 transform rotate-45 -mt-px"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                          xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                                        ></path>
+                                      </svg>
+                                    </span>
                                 </button>
                             </div>
                         </div>
@@ -132,75 +121,42 @@
 </template>
 
 <script>
-import {computed, defineComponent, onUnmounted, ref, watch} from "vue";
+import {defineComponent, ref, watch} from "vue";
 import ChatForm from "../../Components/Channel/ChatForm";
 import AppLayout from "../../Layouts/AppLayout";
-import {usePage} from "@inertiajs/inertia-vue3";
-import Profile from "../../Components/Channel/Profile";
+import RandomChatProfile from "../../Components/Channel/RandomChatProfile";
 import ChannelList from "../../Components/Channel/ChannelList";
 import Chat from "../../Components/Channel/Chat";
+import { Link } from '@inertiajs/inertia-vue3';
+import {getEcho} from "../../Socket/Video";
 
 export default defineComponent({
-    components: {Chat, ChannelList, Profile, AppLayout, ChatForm},
-    props: ['friends'],
+    components: {Chat, ChannelList, AppLayout, ChatForm, RandomChatProfile, Link},
+    props: ['channel'],
     setup(props) {
-        console.log(props.friends);
-        // console.log(props.info);
-        // //채팅방 pusher
-        // const channels = ref([]);
-        // const chats = ref({});
-        // console.log(props.info, 'info');
-        // props.info.channels.map((channel) => {
-        //     channels.value.push(window.Echo.join(`channel.${channel.id}`));
-        // });
-        // channels.value.map((channel) => {
-        //     //https://pusher.com/docs/channels/using_channels/presence-channels/#events
-        //     //가입 시 사용자 인증 프로세스가 트리거된다.
-        //     //일단 프리젠테이션 채널에 가입하면, 회원 반복자를 통해 이벤트가 트리거된다. 이를테면 사용자 목록을 작성하는 데 사용할 수 있다.
-        //     channel.here((members) => {
-        //         //
-        //     });
-        //     //사용자가 채널에 가입할 때 이벤트가 트리거됨
-        //     channel.joining((member) => {
-        //         console.log(member.name);
-        //     });
-        //     channel.listen('.new.message', (chat) => {
-        //         console.log(chat);
-        //         chats.value[currentChannel.value].push(chat);
-        //     });
-        //     channel.leaving((member) => {
-        //         console.log(member.name);
-        //         // remove_member(member.id, member.info);
-        //     });
-        // });
-        //
-        const user = computed(() => usePage().props.value.user)
-        // console.log(user.value)
-        //
-        // const currentChannel = ref(null);
-        //
-        // const changeCurrentChannel = (channel) => {
-        //     currentChannel.value = channel;
-        // }
-        //
-        // const loadChatsByChannel = (channel) => {
-        //     if (chats.value[channel]) {
-        //         return
-        //     }
-        //     axios.get(`/chat/channels/${channel}/chats`)
-        //         .then((res) => {
-        //             chats.value[res.data.id] = res.data.chats;
-        //             console.log('chats.value', chats.value);
-        //         })
-        //         .catch((err) => console.error(err));
-        // };
-        //
-        // watch(currentChannel, (val, oldVal) => {
-        //     console.log(val);
-        //     loadChatsByChannel(val);
-        // })
+    //채팅방 pusher
 
-        return { currentChannel, changeCurrentChannel, chats};
+        const chatMessages = ref([]);
+        const chatMessage = ref(null);
+
+        const chattingListScroll = ref(null);
+
+        const channel = window.Echo.join(`channel.${props.channel.id}`);
+
+        const handleSendChatMessage = () => {
+            axios.post(`/chat/channels/${props.channel.id}`, { message: chatMessage.value})
+                .catch((err) => console.error(err));
+        }
+
+        channel.listen('.new.message', (chat) => {
+            chatMessages.value.push(chat);
+            //셋타임을 안주면 제대로 안내려가짐
+            setTimeout(() => {
+                chattingListScroll.value.scrollTop = chattingListScroll.value.scrollHeight;
+            }, 0)
+        })
+
+        return { handleSendChatMessage, chatMessage, chatMessages, chattingListScroll };
     }
 })
 </script>

@@ -5,6 +5,7 @@ namespace App\Domains\Channel\Controllers;
 use App\Domains\Channel\Models\Channel;
 use App\Domains\Channel\Models\Member;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ChannelResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -13,11 +14,9 @@ class ChannelController extends Controller
 {
     public function index()
     {
-        $channels = Auth::user()->load('channels.members');
+        $friends = Auth::user()->getFriendsAttribute();
 
-        return Inertia::render('Channel/Index', [
-            'info' => $channels
-        ]);
+        return Inertia::render('Channel/Index',['friends' => $friends]);
     }
 
     public function show()

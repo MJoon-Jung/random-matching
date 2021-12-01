@@ -1,8 +1,17 @@
 <template>
     <app-layout title="대기실">
+        <h1 class="text-7xl text-center">
+            랜덤 매칭
+        </h1>
+        <div class="text-center">
+            어떤 매칭을 하실지 정해주세요
+        </div>
         <div class="flex-1 flex flex-col">
             <div class="text-center">
-                <button @click="blindMatching" class="text-7xl">Blind Matching</button>
+                <button @click="blindVideoMatching" class="text-2xl">화상 채팅</button>
+            </div>
+            <div class="text-center">
+                <button @click="blindChatMatching" class="text-2xl">채팅</button>
             </div>
             <div v-if="loading" class="flex-1 flex justify-center items-center mb-48">
                 <svg class="animate-spin h-48 w-48 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -16,7 +25,7 @@
 
 <script>
 import {computed, defineComponent, ref} from "vue";
-import AppLayout from "../../../Layouts/AppLayout";
+import AppLayout from "../../Layouts/AppLayout";
 import {usePage} from "@inertiajs/inertia-vue3";
 import {Inertia} from "@inertiajs/inertia";
 export default defineComponent({
@@ -24,25 +33,34 @@ export default defineComponent({
     setup() {
         const user = computed(() => usePage().props.value.user)
 
-        const type = ref(null);
-
         const loading = ref(false);
 
-        const blindMatching = () => {
-            type.value = 'blind_video';
-            loading.value = true;
-            axios.post('/matching/video/connect', { type: type.value })
-                .catch((err) => console.error(err));
+        const blindVideoMatching = () => {
+            connect('blind_video');
         };
+        const blindChatMatching = () => {
+            connect('blind_chat');
+        };
+
+        const connect = (type) => {
+            loading.value = true;
+            console.log(type);
+            axios.post('/matching/connect', { type: type })
+                .catch((err) => console.error(err));
+        }
 
         window.Echo.private(`users.${user.value.id}`)
             .listen('.new.channel', (event) => {
-                console.log(event)
-                Inertia.visit(`/video/streaming/${event.channelId}`)
-                // window.location.href = `/video/streaming/${event.channelId}`
+                console.log(event);
+                loading.value = false;
+                if (event.type === 'blind_video') {
+                    Inertia.visit(`/random/video/channel/${event.channelId}`);
+                }else {
+                    Inertia.visit(`/random/chat/channel/${event.channelId}`);
+                }
             })
 
-        return { blindMatching, loading };
+        return { blindChatMatching, blindVideoMatching, loading };
     },
 })
 </script>

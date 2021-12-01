@@ -6,18 +6,24 @@ use App\Domains\Channel\Events\ChatMessage;
 use App\Domains\Channel\Models\Channel;
 use App\Domains\Channel\Models\Chat;
 use App\Http\Controllers\Controller;
+use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
 {
-    public function store(Request $request, Channel $channel)
+    public function store(Channel $channel)
     {
-        broadcast(new ChatMessage($channel->id, $request->message));
-        $chat = Chat::where('member_id', Auth::id())
-            ->where('channel_id', $channel->id)
-            ->with('member')->get();
+        $chat = Chat::create([
+            'content' => request('message'),
+            'member_id' => Auth::id(),
+            'channel_id' => $channel->id,
+        ]);
+        $chat->load('member');
 
-        return response()->json($chat, 201);
+        broadcast(new ChatMessage($channel->id, $chat));
+//        event(new ChatMessage($channel->id, $chat));
+
+        return response()->json(["message" => "success"], 201);
     }
 }

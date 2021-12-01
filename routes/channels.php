@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Broadcast;
 use App\Domains\User\Models\User;
 use App\Domains\Channel\Models\Member;
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,5 +37,5 @@ Broadcast::channel('videoChat.{channelId}', function (User $user, string $channe
     if(!$isMember) {
         throw new Exception('접근 권한이 없습니다.', 403);
     }
-    return ['id' => $user->id, 'name' => $user->name];
+    return ['id' => $user->id, 'name' => $user->name, 'photo' => $user->profile_photo_url];
 });

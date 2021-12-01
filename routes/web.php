@@ -7,9 +7,9 @@ use App\Domains\Friend\Controllers\FriendController;
 use App\Domains\User\Controllers\UserController;
 use App\Domains\Channel\Controllers\ChannelController;
 use App\Domains\Channel\Controllers\ChatController;
-use App\Domains\Matching\Controllers\VideoMatchingController;
-use App\Domains\Matching\Controllers\ChatMatchingController;
-use App\Http\Controllers\VideoChatController;
+use App\Domains\Matching\Controllers\VideoChatController;
+use App\Domains\Matching\Controllers\MatchingController;
+use App\Http\Controllers\HomeController;
 use Inertia\Inertia;
 
 /*
@@ -32,23 +32,12 @@ Route::get('/', function () {
     ]);
 });
 
-Route::middleware(['auth:sanctum', 'verified', 'profile'])->get('/home', function () {
-    return Inertia::render('Home');
-})->name('home');
+Route::get('/home', HomeController::class)->middleware(['auth:sanctum', 'verified', 'profile'])->name('home');
 
 
-Route::group(['prefix'=> 'video' ,'middleware'=>['auth:sanctum', 'verified', 'profile']], function () {
-    Route::get('/streaming/temp', [VideoChatController::class, 'temp'])->name('video.index');
-    Route::get('/streaming/{channel}', [VideoChatController::class, 'index'])->name('video.index');
-});
-
-Route::group(['prefix'=>'/matching/chat', 'middleware'=>['auth:sanctum', 'verified', 'profile']], function () {
-    Route::get('/', [ChatMatchingController::class, 'index'])->name('chat-match.index');
-    Route::post('/connect', [ChatMatchingController::class, 'connect'])->name('chat-match.connect');
-});
-Route::group(['prefix'=>'/matching/video', 'middleware'=>['auth:sanctum', 'verified', 'profile']], function () {
-    Route::get('/', [VideoMatchingController::class, 'index'])->name('video-match.index');
-    Route::post('/connect', [VideoMatchingController::class, 'connect'])->name('video-match.connect');
+Route::group(['prefix'=>'/matching', 'middleware'=>['auth:sanctum', 'verified', 'profile']], function () {
+    Route::get('/', [MatchingController::class, 'index'])->name('match.index');
+    Route::post('/connect', [MatchingController::class, 'connect'])->name('match.connect');
 });
 
 Route::group(['prefix'=>'users', 'middleware'=>['auth:sanctum', 'verified', 'profile']], function () {
@@ -63,14 +52,17 @@ Route::group(['prefix'=>'users', 'middleware'=>['auth:sanctum', 'verified', 'pro
    Route::patch('/friends/{user}', [FriendController::class, 'receive'])->name('friend.receive');
 });
 
-Route::group(['prefix'=>'channels', 'middleware'=>['auth:sanctum', 'verified', 'profile']], function () {
+Route::group(['prefix'=>'/chat/channels', 'middleware'=>['auth:sanctum', 'verified', 'profile']], function () {
     Route::get('/', [ChannelController::class, 'index'])->name('channel.index');
     Route::get('/{channel}/chats', [ChannelController::class, 'loadChat'])->name('channel.loadChat');
     Route::patch('/{channel}', [ChannelController::class, 'participate'])->name('channel.participate');
     Route::post('/{channel}', [ChatController::class, 'store'])->name('chat.store');
 });
 
-
+Route::group(['prefix'=> '/random' ,'middleware'=>['auth:sanctum', 'verified', 'profile']], function () {
+    Route::get('/video/channel/{channel}', [VideoChatController::class, 'video'])->name('random.video');
+    Route::get('/chat/channel/{channel}', [VideoChatController::class, 'chat'])->name('random.chat');
+});
 
 
 

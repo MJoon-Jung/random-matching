@@ -45,6 +45,7 @@ class NewChannelEvent implements ShouldBroadcast
     {
         return [
             'channelId' => $this->channel->id,
+            'type' => $this->channel->type,
         ];
     }
     public function getChannelId(): string

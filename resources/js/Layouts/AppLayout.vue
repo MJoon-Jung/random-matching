@@ -23,18 +23,8 @@
                                 </jet-nav-link>
                             </div>
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <jet-nav-link :href="route('chat-match.index')" :active="route().current('chat-match.index')">
-                                    채팅 매칭
-                                </jet-nav-link>
-                            </div>
-                            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <jet-nav-link :href="route('video-match.index')" :active="route().current('video-match.index')">
-                                    화상채팅 매칭
-                                </jet-nav-link>
-                            </div>
-                            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <jet-nav-link :href="route('video.index', 'asdas')" :active="route().current('video.index')">
-                                    화상채팅
+                                <jet-nav-link :href="route('match.index')" :active="route().current('match.index')">
+                                    랜덤 매칭
                                 </jet-nav-link>
                             </div>
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
@@ -371,11 +361,11 @@ export default defineComponent({
             showSearchUserModal.value = false;
         };
 
-        // window.Echo.private(`users.${user.value.id}`)
-        //     .notification((notify) => {
-        //         //notify로 오는 객체가 Notification table에 저장된 데이터와 달라서 부족한 데이터를 제대로 보내도록 해결해야함
-        //         getNotifications();
-        //     });
+        window.Echo.private(`users.${user.value.id}`)
+            .notification((notify) => {
+                //notify로 오는 객체가 Notification table에 저장된 데이터와 달라서 부족한 데이터를 제대로 보내도록 해결해야함
+                getNotifications();
+            });
 
 
         const switchToTeam = (team) => {

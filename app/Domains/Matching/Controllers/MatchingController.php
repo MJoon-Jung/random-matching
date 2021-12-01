@@ -2,31 +2,21 @@
 
 namespace App\Domains\Matching\Controllers;
 
+use App\Domains\Matching\Models\Matching;
 use App\Domains\Matching\Services\MatchingService;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MatchingResource;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
-class VideoMatchingController extends Controller
+class MatchingController extends Controller
 {
-    public function __construct(private MatchingService $matchingService)
-    {
-    }
+    public function __construct(private MatchingService $matchingService){}
 
     public function index()
     {
-        return Inertia::render('Matching/Video/Index');
+        return Inertia::render('Matching/Index');
     }
-    public function wait()
-    {
-    }
-
-    public function cancel()
-    {
-
-    }
-
     public function connect(Request $request)
     {
         $result = ['status' => 200];
@@ -39,14 +29,5 @@ class VideoMatchingController extends Controller
             ];
         }
         return response()->json($result, $result['status']);
-    }
-
-    public function store()
-    {
-    }
-
-    public function disconnect()
-    {
-
     }
 }

@@ -27,12 +27,6 @@ class ChatNotification
      */
     public function handle(ChatMessage $event)
     {
-        Chat::create([
-            'content' => $event->getContent(),
-            'member_id' => Auth::id(),
-            'channel_id' => $event->getChannelId()
-        ]);
-
         Log::info(get_class($event) . ' 이벤트를 수신');
         Log::info(
             sprintf(
