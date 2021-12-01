@@ -71,6 +71,11 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Channel::class, 'channel_member', 'member_id', 'channel_id');
     }
+    public function chatChannels()
+    {
+        return $this->belongsToMany(Channel::class, 'channel_member', 'member_id', 'channel_id')
+                ->where('type', 'blind_chat');
+    }
 
 //    public function members()
 //    {

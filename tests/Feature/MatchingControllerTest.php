@@ -25,7 +25,7 @@ class MatchingControllerTest extends TestCase
 //        $response->assertJsonCount(1, 'data');
 
 
-        $response->assertOk();
+        $response->assertOk(); //200
 
         $this->assertNotNull($response->json('data')[0]['id']);
         $this->assertNotNull($response->json('data')[0]['man']['id']);

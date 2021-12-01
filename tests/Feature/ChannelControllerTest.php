@@ -29,7 +29,8 @@ class ChannelControllerTest extends TestCase
     {
         $user = User::find(2);
         $this->actingAs($user);
-        $response = $this->get('/chat/channels/d8031092-74f2-45b9-bda2-575dff313550/chats')->dump();
+        $response = $this->get('/chat/channels/807d8c00-8814-4b2c-ba42-fbeb3bcb1470/chats?lastId=947')->dump();
+
 
         $response->assertStatus(200);
     }

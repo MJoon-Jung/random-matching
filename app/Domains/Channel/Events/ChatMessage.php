@@ -41,7 +41,7 @@ class ChatMessage implements ShouldBroadcast
      */
     public function broadcastWith()
     {
-        return [$this->chat];
+        return ['chat'=>$this->chat];
     }
 
     public function getChannelId()

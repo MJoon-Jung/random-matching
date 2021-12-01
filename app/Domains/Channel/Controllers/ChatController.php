@@ -19,7 +19,7 @@ class ChatController extends Controller
             'member_id' => Auth::id(),
             'channel_id' => $channel->id,
         ]);
-        $chat->load('member');
+//        $chat->load('member');
 
         broadcast(new ChatMessage($channel->id, $chat));
 //        event(new ChatMessage($channel->id, $chat));

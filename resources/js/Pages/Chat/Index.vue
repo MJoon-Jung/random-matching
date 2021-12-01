@@ -135,7 +135,6 @@ export default defineComponent({
     props: ['channel'],
     setup(props) {
     //채팅방 pusher
-
         const chatMessages = ref([]);
         const chatMessage = ref(null);
 
@@ -148,7 +147,7 @@ export default defineComponent({
                 .catch((err) => console.error(err));
         }
 
-        channel.listen('.new.message', (chat) => {
+        channel.listen('.new.message', ({chat}) => {
             chatMessages.value.push(chat);
             //셋타임을 안주면 제대로 안내려가짐
             setTimeout(() => {

@@ -1,8 +1,5 @@
 <template>
     <app-layout title="Friend">
-        <Link :href="route('user.notification')" method="get">
-            알림
-        </Link>
         <div v-for="friend in friends" :key="friend.id">
             <FriendList :friend="friend" />
         </div>

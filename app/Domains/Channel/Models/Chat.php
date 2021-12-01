@@ -12,6 +12,8 @@ class Chat extends Model
     use HasFactory;
     use Notifiable;
 
+    protected $with=['member'];
+
     protected $fillable = [
         'content',
         'member_id',

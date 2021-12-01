@@ -19189,11 +19189,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
+/* harmony import */ var _inertiajs_inertia_vue3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @inertiajs/inertia-vue3 */ "./node_modules/@inertiajs/inertia-vue3/dist/index.js");
+
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,vue__WEBPACK_IMPORTED_MODULE_0__.defineComponent)({
-  props: ['channels'],
-  setup: function setup(props) {
-    return {};
+  props: ['friends', 'channels'],
+  setup: function setup(props, context) {
+    var user = (0,vue__WEBPACK_IMPORTED_MODULE_0__.computed)(function () {
+      return (0,_inertiajs_inertia_vue3__WEBPACK_IMPORTED_MODULE_1__.usePage)().props.value.user;
+    });
+    console.log(props.channels, 'channels');
+
+    var handleChangeChannel = function handleChangeChannel(channel) {
+      channel.members.forEach(function (member) {
+        if (member.id !== user.value.id) {
+          context.emit('changeCurrentChannel', channel.id);
+        }
+      });
+    };
+
+    return {
+      handleChangeChannel: handleChangeChannel
+    };
   }
 }));
 
@@ -19214,11 +19231,11 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,vue__WEBPACK_IMPORTED_MODULE_0__.defineComponent)({
   props: ['chat'],
-  setup: function setup(props) {// console.log('chat',props.chat);
-
+  setup: function setup(props) {
+    console.log('chat', props.chat);
     /**
      *
-     * random chat으로 넘어올 때는 위처럼 chat.message.으로 시작하지만
+     * random chat으로 넘어올 때는 위처럼 chat.으로 시작하지만
      * 그냥 chat으로 들어오면 chat.content 이런식으로 바로 쓸 수 있어서
      * 재사용을 하기 위해서는 구조를 바꿀 필요가 있다. 백엔드에서
      *
@@ -19313,11 +19330,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
+/* harmony import */ var _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @inertiajs/inertia */ "./node_modules/@inertiajs/inertia/dist/index.js");
+
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,vue__WEBPACK_IMPORTED_MODULE_0__.defineComponent)({
   props: ['friend'],
   setup: function setup(props) {
-    return {};
+    var handleChat = function handleChat() {
+      _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_1__.Inertia.get('/chat/channels');
+    };
+
+    return {
+      handleChat: handleChat
+    };
   }
 }));
 
@@ -20359,12 +20384,12 @@ __webpack_require__.r(__webpack_exports__);
 
     var closeSearchUserModal = function closeSearchUserModal() {
       showSearchUserModal.value = false;
-    };
+    }; // window.Echo.private(`users.${user.value.id}`)
+    //     .notification((notify) => {
+    //         //notify로 오는 객체가 Notification table에 저장된 데이터와 달라서 부족한 데이터를 제대로 보내도록 해결해야함
+    //         getNotifications();
+    //     });
 
-    window.Echo["private"]("users.".concat(user.value.id)).notification(function (notify) {
-      //notify로 오는 객체가 Notification table에 저장된 데이터와 달라서 부족한 데이터를 제대로 보내도록 해결해야함
-      getNotifications();
-    });
 
     var switchToTeam = function switchToTeam(team) {
       _inertiajs_inertia__WEBPACK_IMPORTED_MODULE_8__.Inertia.put(route('current-team.update'), {
@@ -21023,69 +21048,28 @@ __webpack_require__.r(__webpack_exports__);
     AppLayout: _Layouts_AppLayout__WEBPACK_IMPORTED_MODULE_2__["default"],
     ChatForm: _Components_Channel_ChatForm__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
-  props: ['friends'],
+  props: ['friends', 'channels'],
   setup: function setup(props) {
-    console.log(props.friends); // console.log(props.info);
-    // //채팅방 pusher
-    // const channels = ref([]);
-    // const chats = ref({});
-    // console.log(props.info, 'info');
-    // props.info.channels.map((channel) => {
-    //     channels.value.push(window.Echo.join(`channel.${channel.id}`));
-    // });
-    // channels.value.map((channel) => {
-    //     //https://pusher.com/docs/channels/using_channels/presence-channels/#events
-    //     //가입 시 사용자 인증 프로세스가 트리거된다.
-    //     //일단 프리젠테이션 채널에 가입하면, 회원 반복자를 통해 이벤트가 트리거된다. 이를테면 사용자 목록을 작성하는 데 사용할 수 있다.
-    //     channel.here((members) => {
-    //         //
-    //     });
-    //     //사용자가 채널에 가입할 때 이벤트가 트리거됨
-    //     channel.joining((member) => {
-    //         console.log(member.name);
-    //     });
-    //     channel.listen('.new.message', (chat) => {
-    //         console.log(chat);
-    //         chats.value[currentChannel.value].push(chat);
-    //     });
-    //     channel.leaving((member) => {
-    //         console.log(member.name);
-    //         // remove_member(member.id, member.info);
-    //     });
-    // });
-    //
+    // console.log(props.channels)
+    var currentChannel = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(null);
+    var chats = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)({});
 
-    var user = (0,vue__WEBPACK_IMPORTED_MODULE_0__.computed)(function () {
-      return (0,_inertiajs_inertia_vue3__WEBPACK_IMPORTED_MODULE_3__.usePage)().props.value.user;
-    }); // console.log(user.value)
-    //
-    // const currentChannel = ref(null);
-    //
-    // const changeCurrentChannel = (channel) => {
-    //     currentChannel.value = channel;
-    // }
-    //
-    // const loadChatsByChannel = (channel) => {
-    //     if (chats.value[channel]) {
-    //         return
-    //     }
-    //     axios.get(`/chat/channels/${channel}/chats`)
-    //         .then((res) => {
-    //             chats.value[res.data.id] = res.data.chats;
-    //             console.log('chats.value', chats.value);
-    //         })
-    //         .catch((err) => console.error(err));
-    // };
-    //
-    // watch(currentChannel, (val, oldVal) => {
-    //     console.log(val);
-    //     loadChatsByChannel(val);
-    // })
+    var loadChat = function loadChat() {
+      axios.get("/chat/channels/".concat(currentChannel.value, "/chats")).then(function (res) {
+        console.log(res.data);
+        chats.value[res.data.channel.id] = res.data.channel;
+      })["catch"](function (err) {
+        return console.log(err.message);
+      });
+    };
+
+    var changeCurrentChannel = function changeCurrentChannel(id) {
+      currentChannel.value = id;
+      loadChat();
+    };
 
     return {
-      currentChannel: currentChannel,
-      changeCurrentChannel: changeCurrentChannel,
-      chats: chats
+      changeCurrentChannel: changeCurrentChannel
     };
   }
 }));
@@ -21144,7 +21128,8 @@ __webpack_require__.r(__webpack_exports__);
       });
     };
 
-    channel.listen('.new.message', function (chat) {
+    channel.listen('.new.message', function (_ref) {
+      var chat = _ref.chat;
       chatMessages.value.push(chat); //셋타임을 안주면 제대로 안내려가짐
 
       setTimeout(function () {
@@ -22770,22 +22755,44 @@ var _hoisted_1 = ["onClick"];
 var _hoisted_2 = {
   "class": "ml-2 text-sm font-semibold"
 };
+var _hoisted_3 = ["onClick"];
+var _hoisted_4 = {
+  "class": "ml-2 text-sm font-semibold"
+};
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(_ctx.channels, function (channel) {
+  return _ctx.friends ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+    key: 0
+  }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(_ctx.friends, function (friend) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
       onClick: function onClick($event) {
-        return _ctx.$emit('changeCurrentChannel', channel.id);
+        return _ctx.$emit('changeCurrentChannel', friend.id);
       },
       "class": "flex flex-row items-center hover:bg-gray-100 rounded-xl p-2",
-      key: channel.id
-    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("        <span class=\"flex items-center justify-center h-8 w-8 bg-indigo-200 rounded-full\">{{ channel.name[0] }}</span>"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_2, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(channel.members[0].id !== _ctx.$page.props.user.id ? channel.members[0].name : channel.members[1].name), 1
+      key: friend.id
+    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("        <span class=\"flex items-center justify-center h-8 w-8 bg-indigo-200 rounded-full\">{{ friend.name[0] }}</span>"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_2, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(friend.id !== _ctx.$page.props.user.id ? friend.name : friend.name), 1
     /* TEXT */
     )], 8
     /* PROPS */
     , _hoisted_1);
   }), 128
   /* KEYED_FRAGMENT */
-  );
+  )) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+    key: 1
+  }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(_ctx.channels, function (channel) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
+      onClick: function onClick($event) {
+        return _ctx.handleChangeChannel(channel);
+      },
+      "class": "flex flex-row items-center hover:bg-gray-100 rounded-xl p-2",
+      key: channel.id
+    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("        <span class=\"flex items-center justify-center h-8 w-8 bg-indigo-200 rounded-full\">{{ friend.name[0] }}</span>"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_4, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(channel.members[0].id === _ctx.$page.props.user.id ? channel.members[1].name : channel.members[0].name), 1
+    /* TEXT */
+    )], 8
+    /* PROPS */
+    , _hoisted_3);
+  }), 128
+  /* KEYED_FRAGMENT */
+  ));
 }
 
 /***/ }),
@@ -22826,21 +22833,21 @@ var _hoisted_8 = {
   "class": "relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return _ctx.chat.message.member_id === _ctx.$page.props.user.id ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
-    src: _ctx.chat.message.member.profile_photo_url,
+  return _ctx.chat.member_id === _ctx.$page.props.user.id ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
+    src: _ctx.chat.member.profile_photo_url,
     alt: "Avatar",
     "class": "h-20 w-20"
   }, null, 8
   /* PROPS */
-  , _hoisted_3), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.chat.message.content), 1
+  , _hoisted_3), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.chat.content), 1
   /* TEXT */
   )])])])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
-    src: _ctx.chat.message.member.profile_photo_url,
+    src: _ctx.chat.member.profile_photo_url,
     alt: "Avatar",
     "class": "h-20 w-20"
   }, null, 8
   /* PROPS */
-  , _hoisted_7), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.chat.message.content), 1
+  , _hoisted_7), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.chat.content), 1
   /* TEXT */
   )])])]));
 }
@@ -22994,7 +23001,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   /* TEXT */
   ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.friend.name), 1
   /* TEXT */
-  )]);
+  ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    onClick: _cache[0] || (_cache[0] = function () {
+      return _ctx.handleChat && _ctx.handleChat.apply(_ctx, arguments);
+    })
+  }, "채팅하기")]);
 }
 
 /***/ }),
@@ -26659,7 +26670,7 @@ var _hoisted_6 = {
 
 var _hoisted_7 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
   "class": "font-bold"
-}, "Active Conversations", -1
+}, "채팅방 목록", -1
 /* HOISTED */
 );
 
@@ -26670,22 +26681,36 @@ var _hoisted_9 = {
   "class": "flex flex-col space-y-1 mt-4 -mx-2 h-48 overflow-y-auto"
 };
 var _hoisted_10 = {
-  "class": "flex flex-col flex-auto h-full p-6"
+  "class": "flex flex-col mt-8"
 };
 var _hoisted_11 = {
-  "class": "flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-gray-100 h-full p-4"
+  "class": "flex flex-row items-center justify-between text-xs"
 };
-var _hoisted_12 = {
-  "class": "flex flex-col h-full overflow-x-auto mb-4"
-};
+
+var _hoisted_12 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+  "class": "font-bold"
+}, "친구 목록", -1
+/* HOISTED */
+);
+
 var _hoisted_13 = {
-  "class": "flex flex-col h-full"
+  "class": "flex items-center justify-center bg-gray-300 h-4 w-4 rounded-full"
 };
 var _hoisted_14 = {
-  "class": "grid grid-cols-12 gap-y-2"
+  "class": "flex flex-col space-y-1 mt-4 -mx-2 h-48 overflow-y-auto"
 };
 
 var _hoisted_15 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  "class": "flex flex-col flex-auto h-full p-6"
+}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  "class": "flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-gray-100 h-full p-4"
+}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  "class": "flex flex-col h-full overflow-x-auto mb-4"
+}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  "class": "flex flex-col h-full"
+}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  "class": "grid grid-cols-12 gap-y-2"
+}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("                                    <Chat v-if=\"currentChannel\""), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("                                          v-for=\"chat in chats[currentChannel]\""), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("                                          :chat=\"chat\"/>")])])]), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
   "class": "flex flex-row items-center h-16 rounded-xl bg-white w-full px-4"
 }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
   "class": "flex items-center justify-center text-gray-400 hover:text-gray-600"
@@ -26737,7 +26762,7 @@ var _hoisted_15 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
   "stroke-linejoin": "round",
   "stroke-width": "2",
   d: "M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-})])])])])], -1
+})])])])])])])], -1
 /* HOISTED */
 );
 
@@ -26746,32 +26771,27 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
   var _component_ChannelList = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("ChannelList");
 
-  var _component_Chat = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Chat");
-
   var _component_app_layout = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("app-layout");
 
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_app_layout, {
     title: "채널"
   }, {
     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_hoisted_4, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Profile), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [_hoisted_7, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_8, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.$page.props.user.channels.length), 1
+      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [_hoisted_4, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Profile), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [_hoisted_7, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_8, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.channels.length), 1
       /* TEXT */
       )]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_ChannelList, {
         onChangeCurrentChannel: _ctx.changeCurrentChannel,
-        channels: _ctx.info.channels
+        channels: _ctx.channels
       }, null, 8
       /* PROPS */
-      , ["onChangeCurrentChannel", "channels"])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [_ctx.currentChannel ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
-        key: 0
-      }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(_ctx.chats[_ctx.currentChannel], function (chat) {
-        return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_Chat, {
-          chat: chat
-        }, null, 8
-        /* PROPS */
-        , ["chat"]);
-      }), 256
-      /* UNKEYED_FRAGMENT */
-      )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])])]), _hoisted_15])])])])];
+      , ["onChangeCurrentChannel", "channels"])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [_hoisted_12, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_13, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.friends.length), 1
+      /* TEXT */
+      )]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_ChannelList, {
+        onChangeCurrentChannel: _ctx.changeCurrentChannel,
+        friends: _ctx.friends
+      }, null, 8
+      /* PROPS */
+      , ["onChangeCurrentChannel", "friends"])])])]), _hoisted_15])])];
     }),
     _: 1
     /* STABLE */
@@ -27044,12 +27064,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
 
-
-var _hoisted_1 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" 알림 ");
-
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  var _component_Link = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Link");
-
   var _component_FriendList = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("FriendList");
 
   var _component_app_layout = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("app-layout");
@@ -27058,19 +27073,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     title: "Friend"
   }, {
     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Link, {
-        href: _ctx.route('user.notification'),
-        method: "get"
-      }, {
-        "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
-          return [_hoisted_1];
-        }),
-        _: 1
-        /* STABLE */
-
-      }, 8
-      /* PROPS */
-      , ["href"]), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(_ctx.friends, function (friend) {
+      return [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(_ctx.friends, function (friend) {
         return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
           key: friend.id
         }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_FriendList, {
