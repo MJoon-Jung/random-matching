@@ -54,7 +54,7 @@
                     <div
                         class="flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-gray-100 h-full p-4"
                     >
-                        <div ref="chattingListScroll" class="flex flex-col h-full overflow-x-auto overflow-scroll">
+                        <div @scroll="handleScroll" ref="chattingListScroll" class="flex flex-col h-full overflow-x-auto overflow-scroll">
                             <div class="flex flex-col h-full">
                                 <div class="grid grid-cols-12 gap-y-2">
                                     <Chat v-if="currentChannel"
@@ -63,9 +63,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div
-                            class="flex flex-row items-center h-16 rounded-xl bg-white w-full px-4"
-                        >
+                        <form class="flex flex-row items-center h-16 rounded-xl bg-white w-full px-4" @submit.prevent="handleSendChatMessage">
                             <div>
                                 <button
                                     class="flex items-center justify-center text-gray-400 hover:text-gray-600"
@@ -137,7 +135,7 @@
                 </span>
                                 </button>
                             </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -146,38 +144,55 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import {defineComponent, onMounted, ref, watch} from "vue";
 import ChatForm from "../../Components/Channel/ChatForm";
 import AppLayout from "../../Layouts/AppLayout";
 import Profile from "../../Components/Channel/Profile";
 import ChannelList from "../../Components/Channel/ChannelList";
 import Chat from "../../Components/Channel/Chat";
+import InfiniteLoading from "v3-infinite-loading";
+import {throttle} from "lodash/function";
 
 export default defineComponent({
-    components: {Chat, ChannelList, Profile, AppLayout, ChatForm},
-    props: ['friends', 'channels'],
+    components: {Chat, ChannelList, Profile, AppLayout, ChatForm,InfiniteLoading},
+    props: ['friends', 'channels', 'currentChannel'],
     setup(props) {
-        // console.log(props.channels)
-        const currentChannel = ref(null);
+        const currentChannel = ref(props?.currentChannel?.id ? props.currentChannel.id : null);
         const chats = ref({});
         const pusherChannels = ref([]);
         const chatMessage = ref(null);
         const chattingListScroll = ref(null);
+        const complete = ref({});
+        const take = 10
+        const chatScroll = ref(null);
 
-        const loadChat = () => {
-            if (chats.value[currentChannel.value]) {
-                return;
-            }
-            axios.get(`/chat/channels/${currentChannel.value}/chats`)
-                .then((res) => {
-                    chats.value[res.data.channel.id] = res.data.channel.chats;
-                })
-                .catch((err) => console.log(err.message));
+        const loadChatsInit = async () => {
+            const response = await axios.get(`/chat/channels/${currentChannel.value}/chats`);
+            const data = response.data.channel.chats;
+            complete.value[currentChannel.value] = data.length < take;
+            chats.value[response.data.channel.id] = data;
         }
 
-        const changeCurrentChannel = (id) => {
+        const loadChats = async () => {
+            if (complete.value[currentChannel.value]){
+                return;
+            }
+            const beforeScrollHeight = chattingListScroll.value.scrollHeight;
+            const response = await axios.get(`/chat/channels/${currentChannel.value}/chats?lastId=${chats.value[currentChannel.value][0].id}`);
+            const data = response.data.channel.chats;
+            complete.value[currentChannel.value] = data.length < take;
+            chats.value[response.data.channel.id].unshift(...response.data.channel.chats);
+            setTimeout(() => {
+                const afterScrollHeight = chattingListScroll.value.scrollHeight;
+                chattingListScroll.value.scrollTop = afterScrollHeight - beforeScrollHeight;
+            }, 0)
+        }
+        const changeCurrentChannel = async (id) => {
             currentChannel.value = id;
-            loadChat();
+            if (!chats.value[currentChannel.value]) {
+                await loadChatsInit();
+            }
+            chattingListScroll.value.scrollTop = chattingListScroll.value.scrollHeight;
         }
 
         props.channels.forEach((channel) => {
@@ -211,12 +226,25 @@ export default defineComponent({
             }
             axios.post(`/chat/channels/${currentChannel.value}`, { message: chatMessage.value})
                 .then((res) => {
+                    console.log(res.data);
                     chatMessage.value = null
                 })
                 .catch((err) => console.error(err));
         }
+        // onMounted(() => {
+        //     watch(chattingListScroll.value.scrollY, (val) => {
+        //         console.log(val)
+        //     })
+        // })
 
-        return { changeCurrentChannel, chats, currentChannel, handleSendChatMessage, chatMessage, chattingListScroll };
+        const handleScroll = throttle(async () => {
+            if (chattingListScroll.value.scrollTop < 10) {
+                console.log('load')
+                await loadChats();
+            }
+        }, 1000)
+
+        return { changeCurrentChannel, chats, currentChannel, handleSendChatMessage, chatMessage, chattingListScroll, loadChats, chatScroll, handleScroll };
     }
 })
 </script>

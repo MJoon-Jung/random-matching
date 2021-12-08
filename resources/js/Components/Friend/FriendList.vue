@@ -13,9 +13,8 @@ import {Inertia} from "@inertiajs/inertia";
 export default defineComponent({
     props: ['friend'],
     setup(props) {
-
         const handleChat = () => {
-            Inertia.get('/chat/channels')
+            Inertia.get(`/chat/channels?friend=${props.friend.id}`)
         }
 
         return { handleChat };

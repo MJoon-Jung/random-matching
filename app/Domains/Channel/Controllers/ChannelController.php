@@ -7,21 +7,43 @@ use App\Domains\Channel\Models\Channel;
 use App\Domains\Channel\Models\Member;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ChannelResource;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Inertia\Response;
+use function PHPUnit\Framework\isEmpty;
 
 class ChannelController extends Controller
 {
     public function index()
     {
         $friends = Auth::user()->getFriendsAttribute();
+        if(request('friend')) {
+            $channel = $this->searchDmChannel(request('friend'));
+            if (!count($channel)) {
+                $channel = $this->joinChannel(Auth::id(), request('friend', ),'chat');
+            }
+            $channels = Auth::user()->chatChannels;
+            return Inertia::render('Channel/Index',['friends' => $friends, 'channels' => $channels, 'currentChannel' => $channel]);
+        }
         $channels = Auth::user()->chatChannels;
-
         return Inertia::render('Channel/Index',['friends' => $friends, 'channels' => $channels]);
+    }
+    public function searchDmChannel(int $friendId): ?Collection
+    {
+        return Channel::query()
+            ->leftJoin('channel_member', 'channels.id', '=', 'channel_member.channel_id')
+            ->where('channels.type', 'chat')
+            ->where('channel_member.member_id', Auth::id())
+            ->whereIn('channels.id', function ($query) use ($friendId) {
+                return $query->select('channel_id')->from('channel_member')->where('member_id', $friendId)->get();
+            })
+            ->select( 'channels.*')
+            ->get();
     }
 
     public function show()
@@ -37,8 +59,8 @@ class ChannelController extends Controller
                             ->with('chats', function($builder) {
                                 return $builder->when(request('lastId'), function($query) {
                                     return $query->where('id', '<', request('lastId'))->take(30)->latest();
-                                }, function ($q) {
-                                    return $q->take(30)->latest();
+                                }, function ($query) {
+                                    return $query->take(30)->latest();
                                 });
                             })
                             ->orderByDesc('updated_at')
@@ -52,9 +74,10 @@ class ChannelController extends Controller
 
         return response()->json($result, $status);
     }
-    public function joinChannel(int $manId, int $womanId, string $type)
+    public function joinChannel(int $member_id1, int $member_id2, string $type)
     {
         DB::beginTransaction();
+        $channel=null;
         try {
             $uuid = (string) Str::uuid();
 
@@ -65,21 +88,21 @@ class ChannelController extends Controller
 
             Member::create([
                 'channel_id' => $channel->id,
-                'member_id' => $manId,
+                'member_id' => $member_id1,
             ]);
 
             Member::create([
                 'channel_id' => $channel->id,
-                'member_id' => $womanId,
+                'member_id' => $member_id2,
             ]);
 
-            broadcast(new NewChannelEvent($channel, $manId, $womanId));
+            broadcast(new NewChannelEvent($channel, $member_id1, $member_id2));
 
             DB::commit();
-        }catch (\Throwable $e) {
+        }catch (\Exception $e) {
             DB::rollback();
-            throw $e;
         }
+        return $channel;
     }
     public function participate(Channel $channel)
     {
